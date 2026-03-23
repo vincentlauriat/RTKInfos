@@ -1,0 +1,42 @@
+name: RTKMenuBar
+options:
+  bundleIdPrefix: app.rtk-ai
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+packages:
+  SQLite.swift:
+    url: https://github.com/stephencelis/SQLite.swift
+    from: 0.15.0
+
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    SWIFT_VERSION: "5.9"
+    INFOPLIST_FILE: Info.plist
+
+targets:
+  RTKMenuBar:
+    type: application
+    platform: macOS
+    sources:
+      - RTKMenuBar
+    info:
+      path: Info.plist
+    dependencies:
+      - package: SQLite.swift
+        product: SQLite
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.rtk-ai.RTKMenuBar
+
+  RTKMenuBarTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - RTKMenuBarTests
+    dependencies:
+      - target: RTKMenuBar
+      - package: SQLite.swift
+        product: SQLite
