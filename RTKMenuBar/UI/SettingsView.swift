@@ -47,6 +47,9 @@ struct SettingsView: View {
                     Text("60 secondes").tag(60.0)
                 }
                 .pickerStyle(.menu)
+                Text("Prend effet au prochain lancement.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Section("Base de données") {
@@ -58,6 +61,9 @@ struct SettingsView: View {
                 .buttonStyle(.plain)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                Text("Prend effet au prochain lancement.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Section {
