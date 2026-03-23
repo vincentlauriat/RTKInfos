@@ -43,10 +43,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Policy .regular = icône Dock + menu app standard (status item visible)
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
         model.start()
         setupStatusItem()
         setupPopover()
         setupObserver()
+    }
+
+    // Clic sur l'icône Dock → ouvre les Préférences
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        return true
     }
 
     // MARK: - Status Item
