@@ -44,7 +44,7 @@ final class TrackingRepository {
     func todayStats() throws -> DayStats? {
         let db = try openConnection()
         let todayStr = dayString(for: Date())
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date().addingTimeInterval(86400)
         let tomorrowStr = dayString(for: tomorrow)
 
         let stmt = try db.prepare("""
