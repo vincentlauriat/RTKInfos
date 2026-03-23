@@ -4,8 +4,6 @@
 <dict>
     <key>CFBundleName</key>
     <string>RTKMenuBar</string>
-    <key>CFBundleIdentifier</key>
-    <string>app.rtk-ai.RTKMenuBar</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>CFBundleShortVersionString</key>

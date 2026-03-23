@@ -8,7 +8,7 @@ options:
 packages:
   SQLite.swift:
     url: https://github.com/stephencelis/SQLite.swift
-    from: 0.15.0
+    from: 0.16.0
 
 settings:
   base:

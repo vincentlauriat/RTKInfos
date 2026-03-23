@@ -5,7 +5,7 @@ let package = Package(
     name: "RTKMenuBar",
     platforms: [.macOS(.v14)],
     dependencies: [
-        .package(url: "https://github.com/stephencelis/SQLite.swift", from: "0.15.0")
+        .package(url: "https://github.com/stephencelis/SQLite.swift", from: "0.16.0")
     ],
     targets: [
         .executableTarget(

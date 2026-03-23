@@ -21,6 +21,10 @@ xcodegen generate
 swift build
 ```
 
+> **Note** : Le fichier `.xcodeproj` n'est pas versionné (ignoré par `.gitignore`).
+> Il doit être régénéré localement avec `xcodegen generate` après chaque clone.
+> Le fichier `project.yml` est la source de vérité pour la configuration Xcode.
+
 ## Architecture
 
 - `DBWatcher` : surveille `~/.local/share/macrtk/tracking.db` via FSEvents
