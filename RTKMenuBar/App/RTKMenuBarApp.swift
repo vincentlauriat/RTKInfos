@@ -30,8 +30,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var statusItem: NSStatusItem?
     private var popover: NSPopover?
-    private var observerHostingView: NSView?
-    private var observerWindow: NSWindow?  // Strong reference — requis pour ARC
 
     override init() {
         // model doit être initialisé ici car SwiftUI évalue Settings{}.body avant applicationDidFinishLaunching
@@ -43,13 +41,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Policy .regular = icône Dock + menu app standard (status item visible)
+        // Policy .regular = icône Dock + menu app standard
         NSApp.setActivationPolicy(.regular)
-        NSApp.activate(ignoringOtherApps: true)
         model.start()
         setupStatusItem()
         setupPopover()
-        setupObserver()
+        observeModel()
     }
 
     // Clic sur l'icône Dock → ouvre les Préférences
@@ -62,12 +59,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        guard let button = statusItem?.button else { return }
-        button.title = "rtk —"
+        guard let button = statusItem?.button else {
+            return
+            return
+        }
+        // Image SF Symbol comme icône principale (toujours visible)
+        let img = NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: "RTK")
+        img?.isTemplate = true
+        button.image = img
+        button.imagePosition = .imageLeft
+        button.title = " rtk —"
         button.action = #selector(togglePopover)
         button.target = self
         updateStatusBar()
     }
+
 
     // MARK: - Popover
 
@@ -92,37 +98,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    // MARK: - Observation via NSHostingView fantôme
+    // MARK: - Observation via withObservationTracking (API canonique @Observable)
 
-    private func setupObserver() {
-        struct ObserverView: View {
-            let model: StatsModel
-            let onChange: (StatsSnapshot) -> Void
-
-            var body: some View {
-                Color.clear
-                    .frame(width: 0, height: 0)
-                    .onChange(of: model.snapshot.todaySavingsPct) { _, _ in
-                        onChange(model.snapshot)
-                    }
+    private func observeModel() {
+        withObservationTracking {
+            // Accéder aux propriétés observées pour enregistrer les dépendances
+            _ = model.snapshot.todaySavingsPct
+            _ = model.snapshot.isDBMissing
+        } onChange: { [weak self] in
+            // onChange s'exécute hors MainActor — reprogrammer sur MainActor
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.updateStatusBar()
+                // Re-enregistrer pour le prochain changement (observation continue)
+                self.observeModel()
             }
         }
-
-        let hostingView = NSHostingView(
-            rootView: ObserverView(model: model) { [weak self] _ in
-                self?.updateStatusBar()
-            }
-        )
-        hostingView.frame = .zero
-
-        let offscreenWindow = NSWindow(
-            contentRect: NSRect(x: -1000, y: -1000, width: 1, height: 1),
-            styleMask: .borderless, backing: .buffered, defer: false
-        )
-        offscreenWindow.contentView = hostingView
-        offscreenWindow.orderOut(nil)
-        observerHostingView = hostingView
-        observerWindow = offscreenWindow  // Retain explicite — ARC ne doit pas libérer
     }
 
     // MARK: - Mise à jour du label
@@ -132,10 +123,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let snapshot = model.snapshot
 
         if let pct = snapshot.todaySavingsPct {
-            button.title = "rtk \(Int(pct))%"
+            button.title = " rtk \(Int(pct))%"
             button.contentTintColor = savingsColor(pct)
         } else {
-            button.title = "rtk —"
+            button.title = " rtk —"
             button.contentTintColor = .secondaryLabelColor
         }
     }
