@@ -1,18 +1,20 @@
 import SwiftUI
 import ServiceManagement
 
-// Valeur par défaut pour le chemin DB, accessible hors MainActor
+// Valeur par défaut pour le chemin DB, accessible hors MainActor.
+// Même logique que StatsModel.defaultDBPath : retourne le premier chemin existant.
 private func defaultDBPathValue() -> String {
     let appSupport = FileManager.default.urls(
         for: .applicationSupportDirectory,
         in: .userDomainMask
     ).first
-    let candidates: [String?] = [
+    let candidates = [
         appSupport?.appendingPathComponent("macrtk/tracking.db").path,
         (FileManager.default.homeDirectoryForCurrentUser.path as NSString)
             .appendingPathComponent(".local/share/macrtk/tracking.db")
-    ]
-    return candidates.compactMap { $0 }.first ?? ""
+    ].compactMap { $0 }
+    return candidates.first { FileManager.default.fileExists(atPath: $0) }
+        ?? candidates.last ?? ""
 }
 
 struct SettingsView: View {
