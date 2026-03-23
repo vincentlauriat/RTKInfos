@@ -8,9 +8,9 @@ struct RTKMenuBarApp: App {
 
     var body: some Scene {
         // Pas de window principale — menu bar app uniquement
+        // SettingsView n'utilise que @AppStorage, le model n'est pas nécessaire ici
         Settings {
             SettingsView()
-                .environment(AppDelegate.shared.model)
         }
     }
 }
@@ -34,15 +34,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var observerWindow: NSWindow?  // Strong reference — requis pour ARC
 
     override init() {
+        // model doit être initialisé ici car SwiftUI évalue Settings{}.body avant applicationDidFinishLaunching
+        let dbPath = UserDefaults.standard.string(forKey: "dbPath") ?? StatsModel.defaultDBPath
+        let polling = UserDefaults.standard.double(forKey: "pollingInterval").nonZeroOr(30)
+        model = StatsModel(dbPath: dbPath, pollingInterval: polling)
         super.init()
         AppDelegate.shared = self
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        model = StatsModel(
-            dbPath: UserDefaults.standard.string(forKey: "dbPath") ?? StatsModel.defaultDBPath,
-            pollingInterval: UserDefaults.standard.double(forKey: "pollingInterval").nonZeroOr(30)
-        )
         model.start()
         setupStatusItem()
         setupPopover()
