@@ -14,17 +14,22 @@ final class DBWatcher {
     private var eventStream: FSEventStreamRef?
     private var timer: Timer?
     private var continuation: AsyncStream<Void>.Continuation?
+    /// Pointeur retenu par passRetained dans startFSEvents(), libéré dans stop().
+    private var fsSelfPtr: UnsafeMutableRawPointer?
 
     /// Stream d'événements à consommer par StatsModel.
-    lazy var events: AsyncStream<Void> = {
-        AsyncStream { [weak self] continuation in
-            self?.continuation = continuation
-        }
-    }()
+    /// Initialisé de façon synchrone dans init pour éviter une race condition
+    /// si start() est appelé avant le premier accès au stream.
+    private(set) var events: AsyncStream<Void>!
 
     init(directoryPath: String, pollingInterval: TimeInterval = 30.0) {
         self.directoryPath = directoryPath
         self.pollingInterval = pollingInterval
+        var cap: AsyncStream<Void>.Continuation!
+        self.events = AsyncStream<Void> { continuation in
+            cap = continuation
+        }
+        self.continuation = cap
     }
 
     func start() {
@@ -37,7 +42,10 @@ final class DBWatcher {
             FSEventStreamStop(stream)
             FSEventStreamInvalidate(stream)
             // Libère le retain créé par passRetained dans startFSEvents()
-            Unmanaged.passUnretained(self).release()
+            if let ptr = fsSelfPtr {
+                Unmanaged<DBWatcher>.fromOpaque(ptr).release()
+                fsSelfPtr = nil
+            }
             FSEventStreamRelease(stream)
             eventStream = nil
         }
@@ -53,6 +61,7 @@ final class DBWatcher {
 
         // passRetained : incrémente le refcount, équilibré par release() dans stop()
         let selfPtr = Unmanaged.passRetained(self).toOpaque()
+        self.fsSelfPtr = selfPtr  // Stocker pour stop()
 
         var context = FSEventStreamContext(
             version: 0,
