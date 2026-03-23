@@ -30,6 +30,11 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.rtk-ai.RTKMenuBar
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: ""  # À remplir par l'utilisateur
+        CODE_SIGN_IDENTITY: "Developer ID Application"
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: RTKMenuBar/RTKMenuBar.entitlements
 
   RTKMenuBarTests:
     type: bundle.unit-test
