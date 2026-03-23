@@ -41,11 +41,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Policy .regular = icône Dock + menu app standard
-        NSApp.setActivationPolicy(.regular)
-        model.start()
+        // Status item en premier, AVANT le changement de policy
         setupStatusItem()
         setupPopover()
+        // Policy .regular = icône Dock visible
+        NSApp.setActivationPolicy(.regular)
+        model.start()
         observeModel()
     }
 
@@ -58,12 +59,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Status Item
 
     private func setupStatusItem() {
+        // Effacer l'état de visibilité persisté (peut rester à false d'une session précédente)
+        UserDefaults.standard.removeObject(forKey: "NSStatusItem Visible RTKMenuBarStatusItem")
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        guard let button = statusItem?.button else {
-            return
-            return
-        }
-        // Image SF Symbol comme icône principale (toujours visible)
+        statusItem?.autosaveName = "RTKMenuBarStatusItem"
+        statusItem?.isVisible = true
+        guard let button = statusItem?.button else { return }
         let img = NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: "RTK")
         img?.isTemplate = true
         button.image = img
