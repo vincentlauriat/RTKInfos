@@ -153,14 +153,25 @@ final class TrackingRepository {
     func recentCommands(limit: Int = 5) throws -> [CommandRecord] {
         let db = try openConnection()
         var results: [CommandRecord] = []
+
+        // First, check if table exists and has rows
+        let checkStmt = try db.prepare("SELECT COUNT(*) FROM commands")
+        if let row = try checkStmt.next() {
+            let totalCount = (row[0] as? Int64) ?? 0
+            // If no rows, return empty list early
+            if totalCount == 0 {
+                return results
+            }
+        }
+
         let stmt = try db.prepare("""
             SELECT timestamp, original_cmd, rtk_cmd, saved_tokens, savings_pct
             FROM commands
             ORDER BY timestamp DESC
-            LIMIT ?
-        """, limit)
+        """)
 
         for row in stmt {
+            guard results.count < limit else { break }
             guard let tsStr = row[0] as? String,
                   let date = Self.parseTimestamp(tsStr) else { continue }
             results.append(CommandRecord(
