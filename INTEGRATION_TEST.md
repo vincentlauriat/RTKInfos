@@ -10,7 +10,7 @@
 | Vérification           | Résultat |
 |------------------------|----------|
 | Tests unitaires        | ✅ 11/11 passés (0 échec) |
-| DB macrtk présente     | ❌ Non trouvée |
+| DB rtk présente     | ❌ Non trouvée |
 | Schéma DB validé       | ⏭️ Non applicable (DB absente) |
 | Build Release          | ✅ OK |
 
@@ -41,15 +41,15 @@
 
 ---
 
-## 2. DB macrtk
+## 2. DB rtk
 
 **Résultat : DB non trouvée**
 
 Chemins recherchés :
-- `~/.local/share/macrtk/tracking.db` — absent
-- `~/Library/Application Support/macrtk/tracking.db` — absent
+- `~/.local/share/rtk/tracking.db` — absent
+- `~/Library/Application Support/rtk/tracking.db` — absent
 
-**Interprétation** : macrtk (rtk) n'a pas encore été utilisé depuis cette machine, ou est installé sous un autre nom/chemin. Le test unitaire `test_refresh_withMissingDB_setsDBMissingTrue` valide que l'app gère correctement ce cas (état `dbMissing = true`).
+**Interprétation** : rtk (rtk) n'a pas encore été utilisé depuis cette machine, ou est installé sous un autre nom/chemin. Le test unitaire `test_refresh_withMissingDB_setsDBMissingTrue` valide que l'app gère correctement ce cas (état `dbMissing = true`).
 
 ---
 
@@ -82,10 +82,10 @@ Ces tests ne peuvent pas être automatisés sans accès à l'environnement macOS
 | M1 | Lancer l'app depuis Xcode | Ouvrir `RTKMenuBar.xcodeproj`, build & run, vérifier icône dans la menu bar | À faire |
 | M2 | Icône menu bar visible | L'icône apparaît dans la barre de menu système macOS | À faire |
 | M3 | Menu déroulant s'ouvre | Clic sur l'icône → menu s'affiche avec les sections prévues | À faire |
-| M4 | État "DB absente" affiché | Sans macrtk installé/utilisé, le menu affiche "RTK non détecté" ou équivalent | À faire |
+| M4 | État "DB absente" affiché | Sans rtk installé/utilisé, le menu affiche "RTK non détecté" ou équivalent | À faire |
 | M5 | Détection DB en temps réel | Utiliser `rtk gain` pour créer des données → l'app détecte la DB et met à jour l'affichage sans redémarrage | À faire |
-| M6 | Stats du jour affichées | Après utilisation de macrtk, les stats (tokens économisés, nb commandes) apparaissent correctement | À faire |
-| M7 | Rafraîchissement automatique | Exécuter plusieurs commandes macrtk → les stats se mettent à jour dans le menu en temps réel | À faire |
+| M6 | Stats du jour affichées | Après utilisation de rtk, les stats (tokens économisés, nb commandes) apparaissent correctement | À faire |
+| M7 | Rafraîchissement automatique | Exécuter plusieurs commandes rtk → les stats se mettent à jour dans le menu en temps réel | À faire |
 | M8 | Quitter l'app | Menu → Quitter → l'app se ferme proprement, icône disparaît | À faire |
 | M9 | Démarrage au login (optionnel) | Si implémenté : vérifier que l'option "Lancer au démarrage" fonctionne | À faire |
 | M10 | Compatibilité macOS | Tester sur macOS 14 (Sonoma) et macOS 13 (Ventura) si disponible | À faire |
@@ -95,5 +95,5 @@ Ces tests ne peuvent pas être automatisés sans accès à l'environnement macOS
 ## Notes
 
 - Le projet compile et tous les tests unitaires passent — la base de code est saine.
-- L'absence de DB macrtk est un état normal si macrtk n'a pas encore été utilisé ; l'app le gère correctement.
-- Pour déclencher la création de la DB : utiliser `rtk` ou `macrtk` dans un terminal, puis relancer le menu bar.
+- L'absence de DB rtk est un état normal si rtk n'a pas encore été utilisé ; l'app le gère correctement.
+- Pour déclencher la création de la DB : utiliser `rtk` ou `rtk` dans un terminal, puis relancer le menu bar.

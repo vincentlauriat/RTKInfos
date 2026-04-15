@@ -1,12 +1,23 @@
 import Foundation
 import CoreServices
 
-/// Surveille le répertoire macrtk via FSEvents + Timer de polling fallback.
-/// Publie un événement `AsyncStream<Void>` à chaque modification de tracking.db détectée.
+/// Watches the rtk data directory for changes to `history.db` and publishes
+/// events via an `AsyncStream<Void>`.
 ///
-/// Gestion mémoire FSEventStreamContext :
-/// On utilise `passRetained` pour transférer la propriété à FSEventStreamContext.info,
-/// et on appelle `release()` explicitement dans `stop()` pour équilibrer le retain.
+/// Detection uses two complementary layers:
+/// - **FSEvents** (primary): kernel-level file-system notifications with ~500ms latency.
+///   Only fires when a path ending in `history.db` is modified.
+/// - **Timer** (fallback): periodic polling that fires unconditionally. Ensures the UI
+///   stays up to date even on network volumes or when FSEvents is unavailable.
+///
+/// ## Memory management
+/// `FSEventStreamContext` requires a raw C pointer for the `info` field. We use
+/// `Unmanaged.passRetained` to transfer ownership into the context, then call
+/// `release()` explicitly in `stop()` to balance the retain count:
+/// ```
+/// startFSEvents()  →  passRetained(self)   // +1
+/// stop()           →  fromOpaque(ptr).release()  // -1
+/// ```
 final class DBWatcher {
 
     private let directoryPath: String
@@ -14,14 +25,19 @@ final class DBWatcher {
     private var eventStream: FSEventStreamRef?
     private var timer: Timer?
     private var continuation: AsyncStream<Void>.Continuation?
-    /// Pointeur retenu par passRetained dans startFSEvents(), libéré dans stop().
+    /// Retained pointer stored so `stop()` can release it to balance `passRetained`.
     private var fsSelfPtr: UnsafeMutableRawPointer?
 
-    /// Stream d'événements à consommer par StatsModel.
-    /// Initialisé de façon synchrone dans init pour éviter une race condition
-    /// si start() est appelé avant le premier accès au stream.
+    /// Async stream of change notifications consumed by `StatsModel`.
+    ///
+    /// Initialized synchronously in `init()` to eliminate a race condition where
+    /// `start()` could be called before the first access to this property.
     private(set) var events: AsyncStream<Void>!
 
+    /// Creates a watcher for the given directory.
+    /// - Parameters:
+    ///   - directoryPath: Absolute path to the directory containing `history.db`.
+    ///   - pollingInterval: Fallback polling interval in seconds (default: 30).
     init(directoryPath: String, pollingInterval: TimeInterval = 30.0) {
         self.directoryPath = directoryPath
         self.pollingInterval = pollingInterval
@@ -32,16 +48,20 @@ final class DBWatcher {
         self.continuation = cap
     }
 
+    /// Starts both the FSEvents stream and the polling timer.
     func start() {
         startFSEvents()
         startPollingTimer()
     }
 
+    /// Stops all watchers and finishes the `events` stream.
+    ///
+    /// Releases the retained self-pointer created by `startFSEvents()` to
+    /// prevent a memory leak.
     func stop() {
         if let stream = eventStream {
             FSEventStreamStop(stream)
             FSEventStreamInvalidate(stream)
-            // Libère le retain créé par passRetained dans startFSEvents()
             if let ptr = fsSelfPtr {
                 Unmanaged<DBWatcher>.fromOpaque(ptr).release()
                 fsSelfPtr = nil
@@ -59,9 +79,9 @@ final class DBWatcher {
     private func startFSEvents() {
         let paths = [directoryPath] as CFArray
 
-        // passRetained : incrémente le refcount, équilibré par release() dans stop()
+        // passRetained increments the ref count; balanced by release() in stop()
         let selfPtr = Unmanaged.passRetained(self).toOpaque()
-        self.fsSelfPtr = selfPtr  // Stocker pour stop()
+        self.fsSelfPtr = selfPtr
 
         var context = FSEventStreamContext(
             version: 0,
@@ -76,8 +96,12 @@ final class DBWatcher {
                   let paths = unsafeBitCast(eventPaths, to: NSArray.self) as? [String]
             else { return }
             let watcher = Unmanaged<DBWatcher>.fromOpaque(info).takeUnretainedValue()
-            // Filtrer : ne notifier que si tracking.db est concerné
-            let relevant = paths.prefix(numEvents).contains { $0.hasSuffix("tracking.db") }
+            // Notify on history.db changes and WAL/shm files (rtk writes to WAL first)
+            let relevant = paths.prefix(numEvents).contains {
+                $0.hasSuffix("history.db") ||
+                $0.hasSuffix("history.db-wal") ||
+                $0.hasSuffix("history.db-shm")
+            }
             if relevant { watcher.notify() }
         }
 
@@ -90,7 +114,7 @@ final class DBWatcher {
             0.5,
             UInt32(kFSEventStreamCreateFlagFileEvents | kFSEventStreamCreateFlagUseCFTypes)
         ) else {
-            // FSEvents indisponible — le polling fallback prend le relais
+            // FSEvents unavailable — polling fallback will cover detection
             Unmanaged<DBWatcher>.fromOpaque(selfPtr).release()
             return
         }
@@ -111,6 +135,7 @@ final class DBWatcher {
         }
     }
 
+    /// Yields a value into the `events` stream, waking any awaiting consumer.
     private func notify() {
         continuation?.yield()
     }
