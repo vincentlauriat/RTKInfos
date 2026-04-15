@@ -1,27 +1,60 @@
 import SwiftUI
 import Charts
 
+/// The main application window.
+///
+/// Displays today's token savings KPIs, a 7-day savings percentage chart,
+/// and a recent command history list. Conditionally shows status banners
+/// when rtk is not installed or has been inactive for more than 7 days.
+///
+/// Receives `StatsModel` via `@Environment` and re-renders automatically
+/// whenever `snapshot` changes.
 struct DashboardView: View {
 
-    @Environment(StatsModel.self) private var model
+    @EnvironmentObject private var model: StatsModel
+    @Environment(\.openSettings) private var openSettings
+    /// Local copy of the snapshot kept in sync via `.onReceive`.
+    /// Direct `@EnvironmentObject` observation is unreliable on macOS 26 beta;
+    /// subscribing explicitly to `model.$snapshot` guarantees re-renders.
+    @State private var snapshot: StatsSnapshot = .empty
+    @State private var showLiveTrace = true
+    @State private var showByCommand = true
 
     var body: some View {
-        VStack(spacing: 0) {
-            toolbar
-            Divider()
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    statusBanners
-                    if !model.snapshot.isDBMissing {
-                        kpisSection
-                        chartSection
-                        historySection
+        HSplitView {
+            // Left: dashboard
+            VStack(spacing: 0) {
+                toolbar
+                Divider()
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        statusBanners
+                        if !snapshot.isDBMissing {
+                            kpisSection
+                            chartSection
+                            globalStatsSection
+                            if showByCommand { topCommandsSection }
+                        }
                     }
+                    .padding(24)
                 }
-                .padding(24)
+            }
+            .background(.windowBackground)
+            .frame(minWidth: 400)
+
+            // Right: live trace panel (togglable)
+            if showLiveTrace {
+                CommandTraceView()
+                    .frame(minWidth: 280)
+                    .transition(.move(edge: .trailing))
             }
         }
-        .background(.windowBackground)
+        .task {
+            await model.refresh()
+        }
+        .onReceive(model.$snapshot) { newSnapshot in
+            snapshot = newSnapshot
+        }
     }
 
     // MARK: - Toolbar
@@ -34,25 +67,48 @@ struct DashboardView: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text("RTK Token Savings")
                     .font(.headline)
-                Text(model.snapshot.isDBMissing ? "macrtk non détecté" : "Aujourd'hui · \(formattedDate)")
+                Text(snapshot.isDBMissing ? "rtk non détecté" : "Aujourd'hui · \(formattedDate)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             Spacer()
             Button {
-                Task { await model.refresh() }
+                Task { @MainActor in await model.refresh() }
             } label: {
                 Image(systemName: "arrow.clockwise")
             }
             .buttonStyle(.plain)
             .help("Actualiser")
 
-            Button("Préférences") {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+            Divider().frame(height: 14)
+
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { showByCommand.toggle() }
+            } label: {
+                Image(systemName: showByCommand ? "tablecells.fill" : "tablecells")
             }
             .buttonStyle(.plain)
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            .opacity(showByCommand ? 1 : 0.4)
+            .help(showByCommand ? "Masquer By Command" : "Afficher By Command")
+
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) { showLiveTrace.toggle() }
+            } label: {
+                Image(systemName: showLiveTrace ? "terminal.fill" : "terminal")
+            }
+            .buttonStyle(.plain)
+            .opacity(showLiveTrace ? 1 : 0.4)
+            .help(showLiveTrace ? "Masquer Live Trace" : "Afficher Live Trace")
+
+            Divider().frame(height: 14)
+
+            Button {
+                openSettings()
+            } label: {
+                Image(systemName: "gearshape")
+            }
+            .buttonStyle(.plain)
+            .help("Préférences")
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -62,13 +118,13 @@ struct DashboardView: View {
 
     @ViewBuilder
     private var statusBanners: some View {
-        if model.snapshot.isDBMissing {
+        if snapshot.isDBMissing {
             StatusBanner(
                 icon: "exclamationmark.triangle.fill",
                 color: .orange,
-                message: "macrtk introuvable — installez macrtk et exécutez des commandes pour commencer"
+                message: "rtk introuvable — installez rtk et exécutez des commandes pour commencer"
             )
-        } else if model.snapshot.isInactive {
+        } else if snapshot.isInactive {
             let days = daysSinceLastActivity
             StatusBanner(
                 icon: "clock.fill",
@@ -85,25 +141,25 @@ struct DashboardView: View {
             sectionTitle("Aujourd'hui")
             HStack(spacing: 12) {
                 KPICard(
-                    value: model.snapshot.todayStats.map { formatTokens($0.savedTokens) } ?? "—",
+                    value: snapshot.todayStats.map { formatTokens($0.savedTokens) } ?? "—",
                     label: "Tokens économisés",
                     icon: "arrow.down.circle.fill",
                     color: .green
                 )
                 KPICard(
-                    value: model.snapshot.todayStats.map { "\($0.totalCommands)" } ?? "—",
+                    value: snapshot.todayStats.map { "\($0.totalCommands)" } ?? "—",
                     label: "Commandes",
                     icon: "terminal.fill",
                     color: .blue
                 )
                 KPICard(
-                    value: model.snapshot.todayStats.map { "\(Int($0.savingsPct))%" } ?? "—",
+                    value: snapshot.todayStats.map { "\(Int($0.savingsPct))%" } ?? "—",
                     label: "Savings moy.",
                     icon: "percent",
                     color: savingsColor
                 )
                 KPICard(
-                    value: model.snapshot.todayStats.map { formatTokens($0.inputTokens) } ?? "—",
+                    value: snapshot.todayStats.map { formatTokens($0.inputTokens) } ?? "—",
                     label: "Tokens bruts",
                     icon: "doc.text.fill",
                     color: .secondary
@@ -117,13 +173,13 @@ struct DashboardView: View {
     private var chartSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             sectionTitle("7 derniers jours")
-            if model.snapshot.weekStats.isEmpty {
+            if snapshot.weekStats.isEmpty {
                 Text("Pas de données")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
                     .frame(maxWidth: .infinity, minHeight: 120)
             } else {
-                Chart(model.snapshot.weekStats, id: \.date) { stat in
+                Chart(snapshot.weekStats, id: \.date) { stat in
                     BarMark(
                         x: .value("Jour", stat.date, unit: .day),
                         y: .value("Savings %", stat.savingsPct)
@@ -159,44 +215,125 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Historique récent
+    // MARK: - Global stats
 
-    private var historySection: some View {
+    private var globalStatsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            sectionTitle("Historique récent")
-            if model.snapshot.recentCommands.isEmpty {
-                Text("Aucune commande récente")
+            sectionTitle("All time")
+            if let g = snapshot.globalStats {
+                VStack(alignment: .leading, spacing: 6) {
+                    statsRow("Total commands", value: "\(g.totalCommands)")
+                    statsRow("Input tokens",   value: formatTokens(g.totalInputTokens))
+                    statsRow("Output tokens",  value: formatTokens(g.totalOutputTokens))
+                    statsRow("Tokens saved",   value: "\(formatTokens(g.totalSavedTokens)) (\(Int(g.avgSavingsPct))%)")
+                    statsRow("Exec time",      value: "\(formatDuration(g.totalExecTimeMs)) (avg \(g.avgExecTimeMs)ms)")
+
+                    // Efficiency meter
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text("Efficiency")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text("\(String(format: "%.1f", g.avgSavingsPct))%")
+                                .font(.caption2.bold())
+                                .foregroundStyle(colorForPct(g.avgSavingsPct))
+                        }
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(Color.primary.opacity(0.08))
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(colorForPct(g.avgSavingsPct).opacity(0.8))
+                                    .frame(width: geo.size.width * g.avgSavingsPct / 100)
+                            }
+                        }
+                        .frame(height: 6)
+                    }
+                    .padding(.top, 4)
+                }
+                .padding(12)
+                .background(Color.primary.opacity(0.03))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+    }
+
+    private func statsRow(_ label: String, value: String) -> some View {
+        HStack {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text(value)
+                .font(.system(.caption, design: .monospaced))
+                .foregroundStyle(.primary)
+        }
+    }
+
+    // MARK: - Top commands
+
+    private var topCommandsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            sectionTitle("By Command")
+            if snapshot.topCommands.isEmpty {
+                Text("No data")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
             } else {
                 VStack(spacing: 0) {
-                    ForEach(model.snapshot.recentCommands, id: \.timestamp) { cmd in
-                        HStack(spacing: 12) {
-                            Text(cmd.originalCmd)
-                                .font(.system(.caption, design: .monospaced))
+                    // Header
+                    HStack(spacing: 0) {
+                        Text("#").frame(width: 20, alignment: .leading)
+                        Text("Command").frame(maxWidth: .infinity, alignment: .leading)
+                        Text("Count").frame(width: 42, alignment: .trailing)
+                        Text("Saved").frame(width: 52, alignment: .trailing)
+                        Text("Avg%").frame(width: 40, alignment: .trailing)
+                        Text("Impact").frame(width: 72, alignment: .trailing)
+                    }
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 4)
+
+                    ForEach(Array(snapshot.topCommands.enumerated()), id: \.offset) { idx, cmd in
+                        HStack(spacing: 0) {
+                            Text("\(idx + 1)")
+                                .frame(width: 20, alignment: .leading)
+                                .foregroundStyle(.tertiary)
+                            Text(cmd.command)
                                 .lineLimit(1)
-                                .truncationMode(.middle)
+                                .truncationMode(.tail)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                            HStack(spacing: 6) {
-                                Text("\(Int(cmd.savingsPct))%")
-                                    .font(.caption.bold())
-                                    .foregroundStyle(colorForPct(cmd.savingsPct))
-                                    .frame(width: 36, alignment: .trailing)
-                                Text(cmd.timestamp, style: .relative)
-                                    .font(.caption2)
-                                    .foregroundStyle(.tertiary)
-                                    .frame(width: 70, alignment: .trailing)
-                            }
+                            Text("\(cmd.count)")
+                                .frame(width: 42, alignment: .trailing)
+                                .foregroundStyle(.secondary)
+                            Text(formatTokens(cmd.totalSaved))
+                                .frame(width: 52, alignment: .trailing)
+                                .foregroundStyle(.primary)
+                            Text("\(Int(cmd.avgPct))%")
+                                .frame(width: 40, alignment: .trailing)
+                                .foregroundStyle(colorForPct(cmd.avgPct))
+                            impactBar(cmd.impactRatio)
+                                .frame(width: 72, alignment: .trailing)
                         }
-                        .padding(.vertical, 7)
+                        .font(.system(.caption2, design: .monospaced))
+                        .padding(.vertical, 5)
                         .padding(.horizontal, 10)
-                        .background(Color.primary.opacity(0.03))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .padding(.vertical, 2)
+                        .background(idx % 2 == 0 ? Color.primary.opacity(0.02) : Color.clear)
                     }
                 }
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
+    }
+
+    private func impactBar(_ ratio: Double) -> some View {
+        let filled = max(1, Int(ratio * 10))
+        let empty = 10 - filled
+        return Text(String(repeating: "█", count: filled) + String(repeating: "░", count: empty))
+            .font(.system(size: 8, design: .monospaced))
+            .foregroundStyle(Color.green.opacity(0.6 + ratio * 0.4))
     }
 
     // MARK: - Helpers
@@ -215,12 +352,12 @@ struct DashboardView: View {
     }
 
     private var daysSinceLastActivity: Int {
-        guard let last = model.snapshot.lastActivityDate else { return 0 }
+        guard let last = snapshot.lastActivityDate else { return 0 }
         return Calendar.current.dateComponents([.day], from: last, to: Date()).day ?? 0
     }
 
     private var savingsColor: Color {
-        guard let pct = model.snapshot.todaySavingsPct else { return .secondary }
+        guard let pct = snapshot.todaySavingsPct else { return .secondary }
         return colorForPct(pct)
     }
 
@@ -241,10 +378,22 @@ struct DashboardView: View {
         if n >= 1_000 { return String(format: "%.1fk", Double(n) / 1_000) }
         return "\(n)"
     }
+
+    private func formatDuration(_ ms: Int) -> String {
+        let totalSec = ms / 1000
+        let minutes = totalSec / 60
+        let seconds = totalSec % 60
+        if minutes > 0 { return "\(minutes)m \(seconds)s" }
+        return "\(seconds)s"
+    }
 }
 
 // MARK: - KPICard
 
+/// A metric display card showing a single KPI value with an icon and label.
+///
+/// The background and value color are tinted with `color` at reduced opacity
+/// to create a cohesive, accessible appearance without overwhelming the layout.
 private struct KPICard: View {
     let value: String
     let label: String
@@ -279,6 +428,11 @@ private struct KPICard: View {
 
 // MARK: - StatusBanner
 
+/// A full-width alert banner for non-critical status messages.
+///
+/// Used for two states:
+/// - **DB missing**: rtk is not installed or the database path is wrong.
+/// - **Inactive**: no command has been recorded in the last 7 days.
 private struct StatusBanner: View {
     let icon: String
     let color: Color

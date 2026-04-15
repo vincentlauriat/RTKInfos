@@ -1,0 +1,226 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1776232476426,
+  "projectRoot": "/Users/vincent/Documents/GitHub/RTKMenuBar",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "scripts"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "RTKMenuBar": {
+      "path": "RTKMenuBar",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776232476416,
+      "keyFiles": [
+        "RTKMenuBar.entitlements"
+      ]
+    },
+    "RTKMenuBar 2.xcodeproj": {
+      "path": "RTKMenuBar 2.xcodeproj",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776232476417,
+      "keyFiles": [
+        "project.pbxproj"
+      ]
+    },
+    "RTKMenuBar.xcodeproj": {
+      "path": "RTKMenuBar.xcodeproj",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776232476418,
+      "keyFiles": [
+        "project.pbxproj"
+      ]
+    },
+    "RTKMenuBarTests": {
+      "path": "RTKMenuBarTests",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1776232476418,
+      "keyFiles": [
+        "DBWatcherTests.swift",
+        "StatsModelTests.swift",
+        "TrackingRepositoryTests.swift"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 3,
+      "lastAccessed": 1776232476418,
+      "keyFiles": [
+        "ARCHITECTURE.md",
+        "CONTRIBUTING.md",
+        "RELEASE.md"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 1,
+      "lastAccessed": 1776232476418,
+      "keyFiles": [
+        "build-release.sh"
+      ]
+    },
+    "RTKMenuBar/App": {
+      "path": "RTKMenuBar/App",
+      "purpose": "Application code",
+      "fileCount": 1,
+      "lastAccessed": 1776232476418,
+      "keyFiles": [
+        "RTKMenuBarApp.swift"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "RTKMenuBar/UI/DashboardView.swift",
+      "accessCount": 32,
+      "lastAccessed": 1776193089534,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBar/Core/StatsModel.swift",
+      "accessCount": 27,
+      "lastAccessed": 1776119541241,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBar/Core/TrackingRepository.swift",
+      "accessCount": 14,
+      "lastAccessed": 1776118793840,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBar/UI/SettingsView.swift",
+      "accessCount": 13,
+      "lastAccessed": 1776193817679,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBar/App/RTKMenuBarApp.swift",
+      "accessCount": 9,
+      "lastAccessed": 1776193790571,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBar/Core/Models.swift",
+      "accessCount": 5,
+      "lastAccessed": 1776116159602,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBar/UI/CommandTraceView.swift",
+      "accessCount": 5,
+      "lastAccessed": 1776117892821,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBar/Core/DBWatcher.swift",
+      "accessCount": 5,
+      "lastAccessed": 1776119479292,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 4,
+      "lastAccessed": 1776193093411,
+      "type": "directory"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 3,
+      "lastAccessed": 1776113633323,
+      "type": "file"
+    },
+    {
+      "path": "Info.plist",
+      "accessCount": 2,
+      "lastAccessed": 1776193096368,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBar/RTKMenuBar.entitlements",
+      "accessCount": 2,
+      "lastAccessed": 1776193096427,
+      "type": "file"
+    },
+    {
+      "path": "Package.swift",
+      "accessCount": 2,
+      "lastAccessed": 1776193115987,
+      "type": "file"
+    },
+    {
+      "path": "INTEGRATION_TEST.md",
+      "accessCount": 1,
+      "lastAccessed": 1776113327789,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBarTests/StatsModelTests.swift",
+      "accessCount": 1,
+      "lastAccessed": 1776113330901,
+      "type": "file"
+    },
+    {
+      "path": "RTKMenuBarTests/DBWatcherTests.swift",
+      "accessCount": 1,
+      "lastAccessed": 1776113331090,
+      "type": "file"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "accessCount": 1,
+      "lastAccessed": 1776113684986,
+      "type": "file"
+    },
+    {
+      "path": "docs/CONTRIBUTING.md",
+      "accessCount": 1,
+      "lastAccessed": 1776113701963,
+      "type": "file"
+    },
+    {
+      "path": "docs/RELEASE.md",
+      "accessCount": 1,
+      "lastAccessed": 1776113715149,
+      "type": "file"
+    },
+    {
+      "path": "project.yml",
+      "accessCount": 1,
+      "lastAccessed": 1776115079673,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

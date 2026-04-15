@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 import ServiceManagement
 
 // Valeur par défaut pour le chemin DB, accessible hors MainActor.
@@ -9,19 +10,25 @@ private func defaultDBPathValue() -> String {
         in: .userDomainMask
     ).first
     let candidates = [
-        appSupport?.appendingPathComponent("macrtk/tracking.db").path,
+        appSupport?.appendingPathComponent("rtk/history.db").path,
         (FileManager.default.homeDirectoryForCurrentUser.path as NSString)
-            .appendingPathComponent(".local/share/macrtk/tracking.db")
+            .appendingPathComponent(".local/share/rtk/history.db")
     ].compactMap { $0 }
     return candidates.first { FileManager.default.fileExists(atPath: $0) }
         ?? candidates.last ?? ""
 }
 
+/// The application preferences window, opened via Cmd+, or the "Preferences" button.
+///
+/// Settings are persisted in `UserDefaults` via `@AppStorage`. The polling interval
+/// takes effect immediately. Changes to `dbPath` take effect on the next app launch.
 struct SettingsView: View {
 
+    @EnvironmentObject private var model: StatsModel
     @AppStorage("launchAtLogin") private var launchAtLogin = false
     @AppStorage("pollingInterval") private var pollingInterval = 30.0
     @AppStorage("dbPath") private var dbPath = defaultDBPathValue()
+    @AppStorage("menuBarOnly") private var menuBarOnly = false
 
     @State private var loginItemError: String?
 
@@ -38,6 +45,14 @@ struct SettingsView: View {
                         .font(.caption)
                         .foregroundStyle(.red)
                 }
+
+                Toggle("Barre de menu seulement (sans icône Dock)", isOn: $menuBarOnly)
+                    .onChange(of: menuBarOnly) { _, newValue in
+                        applyActivationPolicy(menuBarOnly: newValue)
+                    }
+                Text("Prend effet immédiatement. L'icône ⚡ reste toujours visible dans la barre de menu.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Section("Surveillance") {
@@ -47,9 +62,9 @@ struct SettingsView: View {
                     Text("60 secondes").tag(60.0)
                 }
                 .pickerStyle(.menu)
-                Text("Prend effet au prochain lancement.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                .onChange(of: pollingInterval) { _, newValue in
+                    model.restartWatcher(pollingInterval: newValue)
+                }
             }
 
             Section("Base de données") {
@@ -77,6 +92,10 @@ struct SettingsView: View {
         .padding()
         .frame(width: 400, height: 350)
         .navigationTitle("Préférences")
+    }
+
+    private func applyActivationPolicy(menuBarOnly: Bool) {
+        NSApp.setActivationPolicy(menuBarOnly ? .accessory : .regular)
     }
 
     private func setLaunchAtLogin(enabled: Bool) {

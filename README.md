@@ -1,63 +1,83 @@
 # RTKMenuBar
 
-macOS menu bar app for [macrtk](https://github.com/rtk-ai/macrtk) token savings.
+A native macOS menu bar application that visualizes token savings from [rtk](https://github.com/rtk-ai/rtk) — a CLI proxy that reduces Claude API token consumption by 60–90%.
+
+## Features
+
+- **Real-time monitoring** — watches `history.db` via FSEvents with polling fallback
+- **Daily KPIs** — tokens saved, command count, average savings %, raw token usage
+- **7-day chart** — bar + point chart of daily savings percentage
+- **Recent history** — last 5 commands with savings % and relative timestamp
+- **Status alerts** — detects missing rtk install or inactivity > 7 days
+- **Preferences** — launch at login, polling interval, custom DB path
 
 ## Requirements
 
 - macOS 14+ (Sonoma)
-- macrtk installed and configured
+- [rtk](https://github.com/rtk-ai/rtk) installed and configured
+
+## Installation
+
+Download the latest `.dmg` from [Releases](../../releases), mount it, and drag **RTKMenuBar.app** to `/Applications`.
+
+> The app must be installed in `/Applications` to enable the "Launch at Login" feature.
 
 ## Development
 
+See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for the full development guide.
+
+### Quick start
+
 ```bash
-# Résoudre les dépendances
+# Resolve Swift Package Manager dependencies
 swift package resolve
 
-# Générer le projet Xcode (nécessite xcodegen)
+# Generate the Xcode project (requires xcodegen)
 brew install xcodegen
 xcodegen generate
 
-# Ou builder directement avec SPM
+# Or build directly with SPM
 swift build
 ```
 
-> **Note** : Le fichier `.xcodeproj` n'est pas versionné (ignoré par `.gitignore`).
-> Il doit être régénéré localement avec `xcodegen generate` après chaque clone.
-> Le fichier `project.yml` est la source de vérité pour la configuration Xcode.
+> **Note**: `.xcodeproj` is not committed to version control. Regenerate it locally with
+> `xcodegen generate` after each clone. `project.yml` is the source of truth for Xcode
+> configuration.
 
-## Distribution
-
-### Prérequis
-
-- Compte Apple Developer (99 $/an) avec certificat **Developer ID Application**
-- Xcode avec les outils de ligne de commande installés
-- `create-dmg` : `brew install create-dmg`
-- Identifiants notarytool configurés : `xcrun notarytool store-credentials AC_PASSWORD`
-
-### Construire une release
+### Running tests
 
 ```bash
-./scripts/build-release.sh 1.0.0
+swift test
 ```
-
-Le script guide à travers les étapes :
-1. Génération du projet Xcode via `xcodegen`
-2. Archive Xcode (Product → Archive → Distribute App → Direct Distribution)
-3. Soumission pour notarisation et agrafage (stapling)
-4. Tag git de la version
-
-> **Note** : Les étapes de signing et notarisation nécessitent des credentials Apple Developer
-> non versionnés. Voir les instructions inline du script.
-
-### Tests avant distribution
-
-Consulter `INTEGRATION_TEST.md` pour le protocole de tests manuels complet
-avant toute distribution publique.
 
 ## Architecture
 
-- `DBWatcher` : surveille `~/.local/share/macrtk/tracking.db` via FSEvents
-- `TrackingRepository` : lecture SQLite read-only
-- `StatsModel` : @Observable source de vérité
-- `PopoverView` : dashboard KPIs + chart 7j + historique
-- `SettingsView` : login item, polling interval, DB path
+```
+AppDelegate
+    └── StatsModel (@Observable, @MainActor)
+            ├── DBWatcher  ──── FSEvents + Timer ──── history.db
+            └── TrackingRepository ─────────────────── history.db (read-only)
+
+SwiftUI Views
+    ├── DashboardView  ←── StatsModel.snapshot
+    └── SettingsView   ←── @AppStorage (UserDefaults)
+```
+
+| Component | Role |
+|-----------|------|
+| `AppDelegate` | App lifecycle, initializes `StatsModel` from `UserDefaults` |
+| `StatsModel` | `@Observable` source of truth, drives all UI updates |
+| `DBWatcher` | Watches `history.db` via FSEvents + polling fallback, emits `AsyncStream<Void>` |
+| `TrackingRepository` | Read-only SQLite access to rtk's database |
+| `DashboardView` | Main window: KPIs, 7-day chart, recent command history |
+| `SettingsView` | Preferences: launch at login, polling interval, DB path |
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for a detailed breakdown.
+
+## Distribution
+
+See [docs/RELEASE.md](docs/RELEASE.md) for the full release and notarization process.
+
+## License
+
+MIT

@@ -9,7 +9,7 @@ final class DBWatcherTests: XCTestCase {
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: tempDir) }
 
-        let dbFile = tempDir.appendingPathComponent("tracking.db")
+        let dbFile = tempDir.appendingPathComponent("history.db")
 
         let watcher = DBWatcher(directoryPath: tempDir.path, pollingInterval: 1.0)
         var eventReceived = false

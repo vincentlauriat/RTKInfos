@@ -24,7 +24,7 @@ final class StatsModelTests: XCTestCase {
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: tempDir) }
 
-        let dbPath = tempDir.appendingPathComponent("tracking.db").path
+        let dbPath = tempDir.appendingPathComponent("history.db").path
         createTestDB(at: dbPath)
 
         let model = StatsModel(dbPath: dbPath, pollingInterval: 60)

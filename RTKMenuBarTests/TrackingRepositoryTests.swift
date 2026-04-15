@@ -37,7 +37,7 @@ final class TrackingRepositoryTests: XCTestCase {
 
     func insertCommand(db: Connection, timestamp: String, savedTokens: Int, savingsPct: Double) throws {
         try db.run(
-            "INSERT INTO commands (timestamp, original_cmd, rtk_cmd, input_tokens, output_tokens, saved_tokens, savings_pct) VALUES (?, 'git log', 'macrtk git log', 1000, ?, ?, ?)",
+            "INSERT INTO commands (timestamp, original_cmd, rtk_cmd, input_tokens, output_tokens, saved_tokens, savings_pct) VALUES (?, 'git log', 'rtk git log', 1000, ?, ?, ?)",
             timestamp, 1000 - savedTokens, savedTokens, savingsPct
         )
     }
