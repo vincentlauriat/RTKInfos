@@ -1,96 +1,87 @@
 import Foundation
 
-/// Aggregated token savings statistics for a single calendar day.
-struct DayStats {
-    /// The calendar day these stats represent.
-    let date: Date
-    /// Total number of commands executed through rtk on this day.
-    let totalCommands: Int
-    /// Total input tokens sent to Claude (after rtk optimization).
-    let inputTokens: Int
-    /// Total output tokens received from Claude.
-    let outputTokens: Int
-    /// Total tokens saved compared to the unoptimized requests.
-    let savedTokens: Int
-    /// Average savings percentage across all commands (0.0–100.0).
-    let savingsPct: Double
+public struct DayStats {
+    public let date: Date
+    public let totalCommands: Int
+    public let inputTokens: Int
+    public let outputTokens: Int
+    public let savedTokens: Int
+    public let savingsPct: Double
+
+    public init(date: Date, totalCommands: Int, inputTokens: Int, outputTokens: Int, savedTokens: Int, savingsPct: Double) {
+        self.date = date; self.totalCommands = totalCommands; self.inputTokens = inputTokens
+        self.outputTokens = outputTokens; self.savedTokens = savedTokens; self.savingsPct = savingsPct
+    }
 }
 
-/// A single command execution record as stored by rtk.
-struct CommandRecord {
-    /// When the command was executed (UTC).
-    let timestamp: Date
-    /// The original command before rtk rewriting.
-    let originalCmd: String
-    /// The optimized command sent to Claude.
-    let rtkCmd: String
-    /// Tokens saved compared to the original request.
-    let savedTokens: Int
-    /// Savings as a percentage of the original token count (0.0–100.0).
-    let savingsPct: Double
+public struct CommandRecord {
+    public let timestamp: Date
+    public let originalCmd: String
+    public let rtkCmd: String
+    public let savedTokens: Int
+    public let savingsPct: Double
+
+    public init(timestamp: Date, originalCmd: String, rtkCmd: String, savedTokens: Int, savingsPct: Double) {
+        self.timestamp = timestamp; self.originalCmd = originalCmd; self.rtkCmd = rtkCmd
+        self.savedTokens = savedTokens; self.savingsPct = savingsPct
+    }
 }
 
-/// Aggregated all-time statistics across every recorded command.
-struct GlobalStats {
-    let totalCommands: Int
-    let totalInputTokens: Int
-    let totalOutputTokens: Int
-    let totalSavedTokens: Int
-    let avgSavingsPct: Double
-    let totalExecTimeMs: Int
-    let avgExecTimeMs: Int
+public struct GlobalStats {
+    public let totalCommands: Int
+    public let totalInputTokens: Int
+    public let totalOutputTokens: Int
+    public let totalSavedTokens: Int
+    public let avgSavingsPct: Double
+    public let totalExecTimeMs: Int
+    public let avgExecTimeMs: Int
+
+    public init(totalCommands: Int, totalInputTokens: Int, totalOutputTokens: Int, totalSavedTokens: Int, avgSavingsPct: Double, totalExecTimeMs: Int, avgExecTimeMs: Int) {
+        self.totalCommands = totalCommands; self.totalInputTokens = totalInputTokens
+        self.totalOutputTokens = totalOutputTokens; self.totalSavedTokens = totalSavedTokens
+        self.avgSavingsPct = avgSavingsPct; self.totalExecTimeMs = totalExecTimeMs; self.avgExecTimeMs = avgExecTimeMs
+    }
 }
 
-/// A summary of one command pattern, ranked by tokens saved.
-struct CommandSummary {
-    let command: String
-    let count: Int
-    let totalSaved: Int
-    let avgPct: Double
-    let totalTimeMs: Int
-    /// Relative impact 0.0–1.0 (proportion of the top command's saved tokens).
-    let impactRatio: Double
+public struct CommandSummary {
+    public let command: String
+    public let count: Int
+    public let totalSaved: Int
+    public let avgPct: Double
+    public let totalTimeMs: Int
+    public let impactRatio: Double
+
+    public init(command: String, count: Int, totalSaved: Int, avgPct: Double, totalTimeMs: Int, impactRatio: Double) {
+        self.command = command; self.count = count; self.totalSaved = totalSaved
+        self.avgPct = avgPct; self.totalTimeMs = totalTimeMs; self.impactRatio = impactRatio
+    }
 }
 
-/// An immutable snapshot of all statistics exposed to SwiftUI views.
-///
-/// `StatsModel` replaces `snapshot` atomically on every refresh, which triggers
-/// SwiftUI to re-render only the views that depend on changed fields.
-struct StatsSnapshot {
-    /// Statistics for today, or `nil` if no commands were run today.
-    let todayStats: DayStats?
-    /// Per-day statistics for the past 7 days, in chronological order.
-    let weekStats: [DayStats]
-    /// The most recent commands (up to 50), newest first.
-    let recentCommands: [CommandRecord]
-    /// All-time aggregated statistics.
-    let globalStats: GlobalStats?
-    /// Top 10 commands ranked by tokens saved.
-    let topCommands: [CommandSummary]
-    /// Timestamp of the last recorded command, used to detect inactivity.
-    let lastActivityDate: Date?
-    /// `true` when `history.db` cannot be found at the configured path.
-    let isDBMissing: Bool
+public struct StatsSnapshot {
+    public let todayStats: DayStats?
+    public let weekStats: [DayStats]
+    public let recentCommands: [CommandRecord]
+    public let globalStats: GlobalStats?
+    public let topCommands: [CommandSummary]
+    public let lastActivityDate: Date?
+    public let isDBMissing: Bool
 
-    /// `true` when no command has been recorded in the last 7 days.
-    var isInactive: Bool {
+    public var isInactive: Bool {
         guard let last = lastActivityDate else { return false }
         return Date().timeIntervalSince(last) > 7 * 24 * 3600
     }
 
-    /// Today's average savings percentage, or `nil` if there is no data for today.
-    var todaySavingsPct: Double? {
-        todayStats?.savingsPct
-    }
+    public var todaySavingsPct: Double? { todayStats?.savingsPct }
 
-    /// The initial state used before the first database read completes.
-    static let empty = StatsSnapshot(
-        todayStats: nil,
-        weekStats: [],
-        recentCommands: [],
-        globalStats: nil,
-        topCommands: [],
-        lastActivityDate: nil,
+    public static let empty = StatsSnapshot(
+        todayStats: nil, weekStats: [], recentCommands: [],
+        globalStats: nil, topCommands: [], lastActivityDate: nil,
         isDBMissing: true
     )
+
+    public init(todayStats: DayStats?, weekStats: [DayStats], recentCommands: [CommandRecord], globalStats: GlobalStats?, topCommands: [CommandSummary], lastActivityDate: Date?, isDBMissing: Bool) {
+        self.todayStats = todayStats; self.weekStats = weekStats; self.recentCommands = recentCommands
+        self.globalStats = globalStats; self.topCommands = topCommands
+        self.lastActivityDate = lastActivityDate; self.isDBMissing = isDBMissing
+    }
 }
