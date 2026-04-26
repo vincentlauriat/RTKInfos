@@ -18,7 +18,7 @@ import CoreServices
 /// startFSEvents()  →  passRetained(self)   // +1
 /// stop()           →  fromOpaque(ptr).release()  // -1
 /// ```
-final class DBWatcher {
+public final class DBWatcher {
 
     private let directoryPath: String
     private let pollingInterval: TimeInterval
@@ -32,13 +32,13 @@ final class DBWatcher {
     ///
     /// Initialized synchronously in `init()` to eliminate a race condition where
     /// `start()` could be called before the first access to this property.
-    private(set) var events: AsyncStream<Void>!
+    public private(set) var events: AsyncStream<Void>!
 
     /// Creates a watcher for the given directory.
     /// - Parameters:
     ///   - directoryPath: Absolute path to the directory containing `history.db`.
     ///   - pollingInterval: Fallback polling interval in seconds (default: 30).
-    init(directoryPath: String, pollingInterval: TimeInterval = 30.0) {
+    public init(directoryPath: String, pollingInterval: TimeInterval = 30.0) {
         self.directoryPath = directoryPath
         self.pollingInterval = pollingInterval
         var cap: AsyncStream<Void>.Continuation!
@@ -49,7 +49,7 @@ final class DBWatcher {
     }
 
     /// Starts both the FSEvents stream and the polling timer.
-    func start() {
+    public func start() {
         startFSEvents()
         startPollingTimer()
     }
@@ -58,7 +58,7 @@ final class DBWatcher {
     ///
     /// Releases the retained self-pointer created by `startFSEvents()` to
     /// prevent a memory leak.
-    func stop() {
+    public func stop() {
         if let stream = eventStream {
             FSEventStreamStop(stream)
             FSEventStreamInvalidate(stream)

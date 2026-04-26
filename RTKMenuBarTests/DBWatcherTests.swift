@@ -1,5 +1,5 @@
 import XCTest
-@testable import RTKMenuBar
+@testable import RTKCore
 
 final class DBWatcherTests: XCTestCase {
 

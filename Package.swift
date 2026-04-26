@@ -5,24 +5,33 @@ let package = Package(
     name: "RTKMenuBar",
     platforms: [.macOS(.v14)],
     dependencies: [
-        .package(url: "https://github.com/stephencelis/SQLite.swift", from: "0.16.0")
+        .package(url: "https://github.com/stephencelis/SQLite.swift", from: "0.16.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
     ],
     targets: [
-        .executableTarget(
-            name: "RTKMenuBar",
+        .target(
+            name: "RTKCore",
             dependencies: [
-                .product(name: "SQLite", package: "SQLite.swift")
+                .product(name: "SQLite", package: "SQLite.swift"),
             ],
-            path: "RTKMenuBar",
-            resources: [.copy("Resources")]
+            path: "Sources/RTKCore"
+        ),
+        .executableTarget(
+            name: "RTKStats",
+            dependencies: [
+                "RTKCore",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ],
+            path: "Sources/RTKStats"
         ),
         .testTarget(
             name: "RTKMenuBarTests",
             dependencies: [
-                "RTKMenuBar",
-                .product(name: "SQLite", package: "SQLite.swift")
+                "RTKCore",
+                .product(name: "SQLite", package: "SQLite.swift"),
             ],
-            path: "RTKMenuBarTests"
-        )
+            path: "RTKMenuBarTests",
+            exclude: ["StatsModelTests.swift"]
+        ),
     ]
 )

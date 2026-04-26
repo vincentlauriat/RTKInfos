@@ -1,6 +1,6 @@
 import XCTest
 import SQLite
-@testable import RTKMenuBar
+import RTKCore
 
 @MainActor
 final class StatsModelTests: XCTestCase {

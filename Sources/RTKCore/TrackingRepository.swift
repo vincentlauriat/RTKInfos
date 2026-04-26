@@ -9,7 +9,7 @@ import SQLite
 ///
 /// All queries are read-only (`Connection(path, readonly: true)`).
 /// The app never writes to or modifies the rtk database.
-final class TrackingRepository {
+public final class TrackingRepository {
 
     private let dbPath: String
 
@@ -22,7 +22,7 @@ final class TrackingRepository {
 
     /// Creates a repository for the database at `dbPath`.
     /// - Parameter dbPath: Absolute path to rtk's `history.db`.
-    init(dbPath: String) throws {
+    public init(dbPath: String) throws {
         self.dbPath = dbPath
     }
 
@@ -59,7 +59,7 @@ final class TrackingRepository {
     ///
     /// Returns `false` (rather than throwing) when the schema is incompatible,
     /// allowing the caller to enter a graceful degraded mode.
-    func validateSchema() throws -> Bool {
+    public func validateSchema() throws -> Bool {
         let db = try openConnection()
         var columns: [String] = []
         let stmt = try db.prepare("PRAGMA table_info(commands)")
@@ -76,7 +76,7 @@ final class TrackingRepository {
     /// Returns aggregated statistics for the current calendar day (UTC).
     ///
     /// Returns `nil` if no commands were recorded today.
-    func todayStats() throws -> DayStats? {
+    public func todayStats() throws -> DayStats? {
         let db = try openConnection()
         let todayStr = dayString(for: Date())
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: Date()) ?? Date().addingTimeInterval(86400)
@@ -109,7 +109,7 @@ final class TrackingRepository {
     }
 
     /// Returns per-day statistics for the past 7 days, in chronological order.
-    func weekStats() throws -> [DayStats] {
+    public func weekStats() throws -> [DayStats] {
         let db = try openConnection()
         let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date())!
         let cutoff = ISO8601DateFormatter().string(from: sevenDaysAgo)
@@ -150,7 +150,7 @@ final class TrackingRepository {
     }
 
     /// Returns the `limit` most recent command records, newest first.
-    func recentCommands(limit: Int = 5) throws -> [CommandRecord] {
+    public func recentCommands(limit: Int = 5) throws -> [CommandRecord] {
         let db = try openConnection()
         var results: [CommandRecord] = []
 
@@ -186,7 +186,7 @@ final class TrackingRepository {
     }
 
     /// Returns all-time aggregated statistics across every recorded command.
-    func globalStats() throws -> GlobalStats? {
+    public func globalStats() throws -> GlobalStats? {
         let db = try openConnection()
         let stmt = try db.prepare("""
             SELECT
@@ -214,7 +214,7 @@ final class TrackingRepository {
     }
 
     /// Returns the top 10 command patterns ranked by tokens saved.
-    func topCommands() throws -> [CommandSummary] {
+    public func topCommands() throws -> [CommandSummary] {
         let db = try openConnection()
         var rows: [(cmd: String, count: Int, saved: Int, avgPct: Double, timeMs: Int)] = []
         let stmt = try db.prepare("""
@@ -252,7 +252,7 @@ final class TrackingRepository {
     }
 
     /// Returns the timestamp of the most recent command, used to detect inactivity.
-    func lastActivityDate() throws -> Date? {
+    public func lastActivityDate() throws -> Date? {
         let db = try openConnection()
         let stmt = try db.prepare("SELECT MAX(timestamp) FROM commands")
         guard let row = try stmt.failableNext(),

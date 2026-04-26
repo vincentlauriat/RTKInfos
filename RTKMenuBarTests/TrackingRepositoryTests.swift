@@ -1,6 +1,6 @@
 import XCTest
 import SQLite
-@testable import RTKMenuBar
+@testable import RTKCore
 
 final class TrackingRepositoryTests: XCTestCase {
 
