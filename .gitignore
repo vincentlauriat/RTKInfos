@@ -4,3 +4,4 @@
 *.xcodeproj
 *.xcworkspace
 !project.yml
+.omc/
