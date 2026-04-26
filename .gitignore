@@ -5,3 +5,4 @@
 *.xcworkspace
 !project.yml
 .omc/
+.worktrees/
