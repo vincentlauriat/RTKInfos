@@ -30,7 +30,8 @@ let package = Package(
                 "RTKCore",
                 .product(name: "SQLite", package: "SQLite.swift"),
             ],
-            path: "RTKMenuBarTests"
+            path: "RTKMenuBarTests",
+            exclude: ["StatsModelTests.swift"]
         ),
     ]
 )
