@@ -11,12 +11,6 @@ struct RTKMenuBarApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
-        WindowGroup("RTK Token Savings") {
-            DashboardView()
-                .environmentObject(appDelegate.model)
-        }
-        .defaultSize(width: 1060, height: 560)
-
         Settings {
             SettingsView()
                 .environmentObject(appDelegate.model)
@@ -37,18 +31,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// The central data model injected into the SwiftUI environment.
     private(set) var model: StatsModel!
 
-    /// Menu bar status item (toujours présent, quel que soit le mode).
+    /// Menu bar status item.
     private var statusItem: NSStatusItem?
 
+    /// Fenêtre principale créée manuellement pour un contrôle total du cycle de vie.
+    private var mainWindow: NSWindow?
+
     override init() {
-        // Use saved path only if the file actually exists; fall back to auto-detection otherwise.
         let savedPath = UserDefaults.standard.string(forKey: "dbPath")
         let dbPath: String
         if let saved = savedPath, FileManager.default.fileExists(atPath: saved) {
             dbPath = saved
         } else {
             dbPath = StatsModel.defaultDBPath
-            // Clear the stale preference so Settings shows the correct path
             if savedPath != nil {
                 UserDefaults.standard.removeObject(forKey: "dbPath")
             }
@@ -58,50 +53,61 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         super.init()
     }
 
-    /// Sets the activation policy and starts the model's watcher.
-    ///
-    /// - `.regular` (défaut) : icône Dock + barre de menu.
-    /// - `.accessory`        : barre de menu seulement, pas d'icône Dock.
     func applicationDidFinishLaunching(_ notification: Notification) {
         let menuBarOnly = UserDefaults.standard.bool(forKey: "menuBarOnly")
         applyActivationPolicy(menuBarOnly: menuBarOnly)
+        setupMainWindow()
         setupStatusItem()
         model.start()
     }
 
-    /// Applique la politique d'activation selon le mode choisi.
     func applyActivationPolicy(menuBarOnly: Bool) {
         NSApp.setActivationPolicy(menuBarOnly ? .accessory : .regular)
     }
 
-    /// Crée l'item ⚡ dans la barre de menu système.
+    /// Crée la fenêtre principale avec NSHostingView — isReleasedWhenClosed = false garanti.
+    private func setupMainWindow() {
+        let content = DashboardView().environmentObject(model)
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 1060, height: 560),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "RTK Token Savings"
+        window.contentView = NSHostingView(rootView: content)
+        window.isReleasedWhenClosed = false
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        mainWindow = window
+    }
+
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem?.button else { return }
         button.image = NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: "RTK")
-        button.image?.isTemplate = true  // s'adapte au mode clair/sombre
+        button.image?.isTemplate = true
         button.action = #selector(statusItemClicked)
         button.target = self
         button.toolTip = "RTK Token Savings"
     }
 
-    /// Ouvre (ou ramène au premier plan) la fenêtre principale au clic sur l'item.
     @objc private func statusItemClicked() {
-        guard let window = NSApp.windows.first(where: { $0.title == "RTK Token Savings" }) else { return }
-        window.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+        guard let window = mainWindow else { return }
+        if window.isVisible {
+            window.orderOut(nil)
+        } else {
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
-    /// Returns `false` so the app keeps running when all windows are closed.
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         false
     }
 
-    /// Re-opens the main window when the user clicks the Dock icon with no visible windows.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        if !flag {
-            NSApp.windows.first?.makeKeyAndOrderFront(nil)
-        }
+        if !flag { mainWindow?.makeKeyAndOrderFront(nil) }
         return true
     }
 }
