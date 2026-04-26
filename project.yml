@@ -22,6 +22,7 @@ targets:
     platform: macOS
     sources:
       - RTKMenuBar
+      - Sources/RTKCore
     info:
       path: Info.plist
     dependencies:
