@@ -5,5 +5,17 @@
     <link>https://raw.githubusercontent.com/vincentlauriat/RTKInfos/main/appcast.xml</link>
     <description>RTKInfos release feed</description>
     <language>en</language>
+    <item>
+      <title>v1.0.0</title>
+      <pubDate>Tue, 05 May 2026 18:29:49 +0700</pubDate>
+      <sparkle:version>1</sparkle:version>
+      <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:releaseNotesLink>https://github.com/vincentlauriat/RTKInfos/releases/tag/v1.0.0</sparkle:releaseNotesLink>
+      <enclosure
+        url="https://github.com/vincentlauriat/RTKInfos/releases/download/v1.0.0/RTKInfos-1.0.0.dmg"
+        type="application/octet-stream"
+        sparkle:edSignature="1kRPNcLph2ZhnGw+Af0pNQzVl40VE7ujQL/1VmsjYSXtP7dcjVv+HfPfCxs5Ouq+4DFYY0Udy5s3/b9jdzKgDA==" length="1841738" />
+    </item>
   </channel>
 </rss>
