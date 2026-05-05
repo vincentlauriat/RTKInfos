@@ -11,3 +11,6 @@
 *.profraw
 INTEGRATION_TEST.md
 docs/superpowers/
+.sparkle-tools/
+/build/
+*.dmg

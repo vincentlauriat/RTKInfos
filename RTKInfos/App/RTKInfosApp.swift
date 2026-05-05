@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import Sparkle
 
 /// The SwiftUI entry point for RTKInfos.
 ///
@@ -36,6 +37,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var mainWindow: NSWindow?
 
+    /// Sparkle in-app updater. `startingUpdater: true` begins background checks immediately.
+    private let updaterController = SPUStandardUpdaterController(
+        startingUpdater: true,
+        updaterDelegate: nil,
+        userDriverDelegate: nil
+    )
+
     override init() {
         let savedPath = UserDefaults.standard.string(forKey: "dbPath")
         let dbPath: String
@@ -57,6 +65,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         applyActivationPolicy(menuBarOnly: menuBarOnly)
         setupMainWindow()
         setupStatusItem()
+        addCheckForUpdatesMenuItem()
         model.start()
     }
 
@@ -88,6 +97,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         button.action = #selector(statusItemClicked)
         button.target = self
         button.toolTip = "RTK Token Savings"
+    }
+
+    /// Inserts "Check for Updates…" into the app menu (after "About RTKInfos").
+    private func addCheckForUpdatesMenuItem() {
+        guard let appMenu = NSApp.mainMenu?.item(at: 0)?.submenu else { return }
+        let item = NSMenuItem(
+            title: "Check for Updates…",
+            action: #selector(checkForUpdates),
+            keyEquivalent: ""
+        )
+        item.target = self
+        appMenu.insertItem(.separator(), at: 1)
+        appMenu.insertItem(item, at: 2)
+    }
+
+    @objc private func checkForUpdates() {
+        updaterController.checkForUpdates(nil)
     }
 
     @objc private func statusItemClicked() {
