@@ -6,3 +6,8 @@
 !project.yml
 .omc/
 .worktrees/
+.superpowers/
+.claude/
+*.profraw
+INTEGRATION_TEST.md
+docs/superpowers/

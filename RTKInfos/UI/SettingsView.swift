@@ -82,7 +82,7 @@ struct SettingsView: View {
             }
 
             Section {
-                Button("Quitter RTKMenuBar") {
+                Button("Quit RTKInfos") {
                     NSApplication.shared.terminate(nil)
                 }
                 .foregroundStyle(.red)

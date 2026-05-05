@@ -1,6 +1,6 @@
-# RTKMenuBar
+# RTKInfos
 
-A native macOS menu bar application that visualizes token savings from [rtk](https://github.com/rtk-ai/rtk) — a CLI proxy that reduces Claude API token consumption by 60–90%.
+A native macOS app that visualizes token savings from [rtk](https://github.com/rtk-ai/rtk) — a CLI proxy that reduces Claude API token consumption by 60–90%.
 
 ## Features
 
@@ -18,7 +18,7 @@ A native macOS menu bar application that visualizes token savings from [rtk](htt
 
 ## Installation
 
-Download the latest `.dmg` from [Releases](../../releases), mount it, and drag **RTKMenuBar.app** to `/Applications`.
+Download the latest `.dmg` from [Releases](../../releases), mount it, and drag **RTKInfos.app** to `/Applications`.
 
 > The app must be installed in `/Applications` to enable the "Launch at Login" feature.
 
@@ -66,7 +66,7 @@ SwiftUI Views
 | Component | Role |
 |-----------|------|
 | `AppDelegate` | App lifecycle, initializes `StatsModel` from `UserDefaults` |
-| `StatsModel` | `@Observable` source of truth, drives all UI updates |
+| `StatsModel` | Observable source of truth, drives all UI updates |
 | `DBWatcher` | Watches `history.db` via FSEvents + polling fallback, emits `AsyncStream<Void>` |
 | `TrackingRepository` | Read-only SQLite access to rtk's database |
 | `DashboardView` | Main window: KPIs, 7-day chart, recent command history |
@@ -80,4 +80,4 @@ See [docs/RELEASE.md](docs/RELEASE.md) for the full release and notarization pro
 
 ## License
 
-MIT
+[MIT](LICENSE)

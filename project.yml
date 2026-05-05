@@ -1,4 +1,4 @@
-name: RTKMenuBar
+name: RTKInfos
 options:
   bundleIdPrefix: app.rtk-ai
   deploymentTarget:
@@ -17,11 +17,11 @@ settings:
     INFOPLIST_FILE: Info.plist
 
 targets:
-  RTKMenuBar:
+  RTKInfos:
     type: application
     platform: macOS
     sources:
-      - RTKMenuBar
+      - RTKInfos
       - Sources/RTKCore
     info:
       path: Info.plist
@@ -30,10 +30,10 @@ targets:
         product: SQLite
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: app.rtk-ai.RTKMenuBar
+        PRODUCT_BUNDLE_IDENTIFIER: app.rtk-ai.RTKInfos
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_HARDENED_RUNTIME: YES
-        CODE_SIGN_ENTITLEMENTS: RTKMenuBar/RTKMenuBar.entitlements
+        CODE_SIGN_ENTITLEMENTS: RTKInfos/RTKInfos.entitlements
       configs:
         Debug:
           CODE_SIGN_IDENTITY: "-"
@@ -41,15 +41,15 @@ targets:
           CODE_SIGNING_ALLOWED: YES
         Release:
           CODE_SIGN_STYLE: Automatic
-          DEVELOPMENT_TEAM: ""  # À remplir par l'utilisateur
+          DEVELOPMENT_TEAM: ""  # Fill in your Apple Developer Team ID
           CODE_SIGN_IDENTITY: "Developer ID Application"
 
-  RTKMenuBarTests:
+  RTKInfosTests:
     type: bundle.unit-test
     platform: macOS
     sources:
-      - RTKMenuBarTests
+      - RTKInfosTests
     dependencies:
-      - target: RTKMenuBar
+      - target: RTKInfos
       - package: SQLite.swift
         product: SQLite

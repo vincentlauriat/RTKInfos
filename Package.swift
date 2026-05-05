@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "RTKMenuBar",
+    name: "RTKInfos",
     platforms: [.macOS(.v14)],
     dependencies: [
         .package(url: "https://github.com/stephencelis/SQLite.swift", from: "0.16.0"),
@@ -25,12 +25,12 @@ let package = Package(
             path: "Sources/RTKStats"
         ),
         .testTarget(
-            name: "RTKMenuBarTests",
+            name: "RTKInfosTests",
             dependencies: [
                 "RTKCore",
                 .product(name: "SQLite", package: "SQLite.swift"),
             ],
-            path: "RTKMenuBarTests",
+            path: "RTKInfosTests",
             exclude: ["StatsModelTests.swift"]
         ),
     ]

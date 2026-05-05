@@ -1,6 +1,6 @@
 # Release Process
 
-RTKMenuBar is distributed as a notarized `.dmg` outside the Mac App Store.
+RTKInfos is distributed as a notarized `.dmg` outside the Mac App Store.
 
 ## Prerequisites
 
@@ -48,7 +48,7 @@ In the Organizer window: select the archive → **Distribute App** → **Direct 
 ### 3. Notarize
 
 ```bash
-xcrun notarytool submit RTKMenuBar.zip \
+xcrun notarytool submit RTKInfos.zip \
   --keychain-profile AC_PASSWORD \
   --wait
 ```
@@ -56,21 +56,21 @@ xcrun notarytool submit RTKMenuBar.zip \
 ### 4. Staple
 
 ```bash
-xcrun stapler staple RTKMenuBar.app
+xcrun stapler staple RTKInfos.app
 ```
 
 ### 5. Create DMG
 
 ```bash
 create-dmg \
-  --volname "RTKMenuBar" \
+  --volname "RTKInfos" \
   --window-pos 200 120 \
   --window-size 600 400 \
   --icon-size 100 \
-  --icon "RTKMenuBar.app" 175 190 \
+  --icon "RTKInfos.app" 175 190 \
   --app-drop-link 425 190 \
-  "RTKMenuBar-1.2.0.dmg" \
-  "RTKMenuBar.app"
+  "RTKInfos-1.2.0.dmg" \
+  "RTKInfos.app"
 ```
 
 ### 6. Tag and push
@@ -81,8 +81,6 @@ git push origin v1.2.0
 ```
 
 ## Pre-release checklist
-
-Consult `INTEGRATION_TEST.md` for the full manual test protocol before any public release.
 
 - [ ] `swift test` passes (11/11)
 - [ ] App launches and detects rtk database

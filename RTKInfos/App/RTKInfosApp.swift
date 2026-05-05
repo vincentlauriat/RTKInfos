@@ -1,12 +1,12 @@
 import SwiftUI
 import AppKit
 
-/// The SwiftUI entry point for RTKMenuBar.
+/// The SwiftUI entry point for RTKInfos.
 ///
 /// Uses `@NSApplicationDelegateAdaptor` to bridge to `AppDelegate`, which initializes
 /// `StatsModel` before any view renders, preventing nil environment object crashes.
 @main
-struct RTKMenuBarApp: App {
+struct RTKInfosApp: App {
 
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
@@ -34,7 +34,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Menu bar status item.
     private var statusItem: NSStatusItem?
 
-    /// Fenêtre principale créée manuellement pour un contrôle total du cycle de vie.
     private var mainWindow: NSWindow?
 
     override init() {
@@ -65,7 +64,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(menuBarOnly ? .accessory : .regular)
     }
 
-    /// Crée la fenêtre principale avec NSHostingView — isReleasedWhenClosed = false garanti.
     private func setupMainWindow() {
         let content = DashboardView().environmentObject(model)
         let window = NSWindow(

@@ -117,7 +117,7 @@ final class StatsModel: ObservableObject {
                 isDBMissing: false
             )
         } catch {
-            print("[RTKMenuBar] Refresh error: \(error)")
+            print("[RTKInfos] Refresh error: \(error)")
         }
     }
 

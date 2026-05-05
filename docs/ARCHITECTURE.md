@@ -1,12 +1,12 @@
 # Architecture
 
-RTKMenuBar is a native macOS application built with SwiftUI that reads from rtk's SQLite tracking database and displays token savings statistics in a persistent window.
+RTKInfos is a native macOS application built with SwiftUI that reads from rtk's SQLite tracking database and displays token savings statistics in a persistent window.
 
 ## Overview
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  RTKMenuBarApp (@main)                                   │
+│  RTKInfosApp (@main)                                   │
 │  └── AppDelegate (NSApplicationDelegate)                 │
 │       └── StatsModel (@Observable, @MainActor)          │
 │            ├── DBWatcher                                 │
@@ -25,9 +25,9 @@ RTKMenuBar is a native macOS application built with SwiftUI that reads from rtk'
 
 ## Components
 
-### `RTKMenuBarApp` + `AppDelegate`
+### `RTKInfosApp` + `AppDelegate`
 
-**File**: `RTKMenuBar/App/RTKMenuBarApp.swift`
+**File**: `RTKInfos/App/RTKInfosApp.swift`
 
 The SwiftUI entry point uses `@NSApplicationDelegateAdaptor` to bridge to `AppDelegate`. This is necessary because:
 
@@ -43,7 +43,7 @@ Key behaviors:
 
 ### `StatsModel`
 
-**File**: `RTKMenuBar/Core/StatsModel.swift`
+**File**: `RTKInfos/Core/StatsModel.swift`
 
 The single source of truth for all UI state.
 
@@ -76,7 +76,7 @@ Returns the first path that exists, falling back to the last candidate.
 
 ### `DBWatcher`
 
-**File**: `RTKMenuBar/Core/DBWatcher.swift`
+**File**: `RTKInfos/Core/DBWatcher.swift`
 
 Monitors the rtk data directory and emits `AsyncStream<Void>` events when `history.db` changes.
 
@@ -105,7 +105,7 @@ The stream and its continuation are created synchronously in `init()` to elimina
 
 ### `TrackingRepository`
 
-**File**: `RTKMenuBar/Core/TrackingRepository.swift`
+**File**: `RTKInfos/Core/TrackingRepository.swift`
 
 Read-only SQLite access layer using [SQLite.swift](https://github.com/stephencelis/SQLite.swift).
 
@@ -131,7 +131,7 @@ Read-only SQLite access layer using [SQLite.swift](https://github.com/stephencel
 
 ### `Models`
 
-**File**: `RTKMenuBar/Core/Models.swift`
+**File**: `RTKInfos/Core/Models.swift`
 
 Plain value types — no logic, no side effects.
 
@@ -148,7 +148,7 @@ StatsSnapshot      — complete UI state snapshot (immutable)
 
 ### `DashboardView`
 
-**File**: `RTKMenuBar/UI/DashboardView.swift`
+**File**: `RTKInfos/UI/DashboardView.swift`
 
 Main application window. Receives `StatsModel` via `@Environment`.
 
@@ -180,7 +180,7 @@ Main application window. Receives `StatsModel` via `@Environment`.
 
 ### `SettingsView`
 
-**File**: `RTKMenuBar/UI/SettingsView.swift`
+**File**: `RTKInfos/UI/SettingsView.swift`
 
 SwiftUI `Settings` scene (accessible via `Cmd+,` or the "Preferences" button).
 
@@ -220,7 +220,7 @@ history.db modified
 ## Dependency graph
 
 ```
-RTKMenuBarApp
+RTKInfosApp
 ├── AppDelegate
 │   └── StatsModel
 │       ├── DBWatcher (CoreServices.FSEvents)

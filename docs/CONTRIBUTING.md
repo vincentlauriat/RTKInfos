@@ -13,8 +13,8 @@ macOS 14 (Sonoma) or later is required to build and run the app.
 ## Getting started
 
 ```bash
-git clone https://github.com/your-org/RTKMenuBar.git
-cd RTKMenuBar
+git clone https://github.com/rtk-ai/RTKInfos.git
+cd RTKInfos
 
 # Resolve Swift Package Manager dependencies
 swift package resolve
@@ -23,7 +23,7 @@ swift package resolve
 xcodegen generate
 
 # Open in Xcode
-open RTKMenuBar.xcodeproj
+open RTKInfos.xcodeproj
 ```
 
 > `.xcodeproj` is gitignored. Always regenerate it with `xcodegen generate` after pulling changes that touch `project.yml`.
@@ -31,19 +31,22 @@ open RTKMenuBar.xcodeproj
 ## Project structure
 
 ```
-RTKMenuBar/
-├── RTKMenuBar/
+RTKInfos/
+├── RTKInfos/
 │   ├── App/
-│   │   └── RTKMenuBarApp.swift     # Entry point + AppDelegate
+│   │   └── RTKInfosApp.swift       # Entry point + AppDelegate
 │   ├── Core/
 │   │   ├── Models.swift            # Data structures (DayStats, CommandRecord, StatsSnapshot)
-│   │   ├── StatsModel.swift        # @Observable source of truth
+│   │   ├── StatsModel.swift        # Observable source of truth
 │   │   ├── DBWatcher.swift         # FSEvents + polling watcher
 │   │   └── TrackingRepository.swift # SQLite read-only access
 │   └── UI/
 │       ├── DashboardView.swift     # Main window
 │       └── SettingsView.swift      # Preferences
-├── RTKMenuBarTests/                # XCTest suite
+├── RTKInfosTests/                  # XCTest suite
+├── Sources/
+│   ├── RTKCore/                    # Shared library (models, DB access)
+│   └── RTKStats/                   # CLI tool (rtk-stats)
 ├── docs/                           # Documentation
 ├── scripts/
 │   └── build-release.sh           # Notarization + DMG packaging
@@ -61,7 +64,7 @@ RTKMenuBar/
 swift build
 
 # Xcode build (required for running the app)
-xcodebuild -project RTKMenuBar.xcodeproj -scheme RTKMenuBar build
+xcodebuild -project RTKInfos.xcodeproj -scheme RTKInfos build
 ```
 
 ### Running tests
@@ -99,7 +102,7 @@ INSERT INTO commands VALUES
 "
 ```
 
-Then launch RTKMenuBar — it will detect the database automatically.
+Then launch RTKInfos — it will detect the database automatically.
 
 ## Code style
 
@@ -117,7 +120,7 @@ Then launch RTKMenuBar — it will detect the database automatically.
 3. Add the SQL query in `TrackingRepository`.
 4. Update `StatsModel.refresh()` to populate the new field.
 5. Display it in `DashboardView`.
-6. Add a test in `TrackingRepositoryTests`.
+6. Add a test in `RTKInfosTests`.
 
 ## Git workflow
 
