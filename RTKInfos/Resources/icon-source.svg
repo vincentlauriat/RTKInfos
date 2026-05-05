@@ -1,0 +1,31 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1c1c1e"/>
+      <stop offset="100%" stop-color="#2c2c2e"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff9500"/>
+      <stop offset="100%" stop-color="#ff6b35"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded rect (macOS will clip, but good to have) -->
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+
+  <!-- Subtle graph line in bottom area -->
+  <polyline
+    points="85,810 240,727 393,752 547,615 700,580 940,495"
+    fill="none"
+    stroke="rgba(255,149,0,0.18)"
+    stroke-width="22"
+    stroke-linecap="round"
+    stroke-linejoin="round"/>
+  <!-- Graph dots -->
+  <circle cx="240" cy="727" r="17" fill="rgba(255,149,0,0.22)"/>
+  <circle cx="547" cy="615" r="17" fill="rgba(255,149,0,0.22)"/>
+  <circle cx="940" cy="495" r="17" fill="rgba(255,149,0,0.22)"/>
+
+  <!-- Lightning bolt -->
+  <path d="M582 154 L342 512 L487 512 L444 854 L700 444 L538 444 Z" fill="url(#bolt)"/>
+</svg>
