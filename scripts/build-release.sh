@@ -58,7 +58,9 @@ if [ ! -d "$APP" ]; then
 fi
 
 # 4. Stage to a clean directory (strips com.apple.provenance xattrs)
-SIGNING_IDENTITY="${SIGNING_IDENTITY:-Developer ID Application: Vincent LAURIAT (KFLACS69T9)}"
+# Set SIGNING_IDENTITY to your "Developer ID Application: Name (TEAMID)" certificate.
+# Find yours with: security find-identity -v -p codesigning | grep "Developer ID"
+SIGNING_IDENTITY="${SIGNING_IDENTITY:?Set SIGNING_IDENTITY to your Developer ID certificate, e.g. SIGNING_IDENTITY='Developer ID Application: Your Name (TEAMID)' ./scripts/build-release.sh $VERSION}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-RTKInfos-Notary}"
 
 STAGING_DIR="$(mktemp -d)"
