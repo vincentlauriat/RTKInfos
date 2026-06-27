@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RTKInfos — See your RTK token savings, live, from the menu bar</title>
+<meta name="description" content="A native macOS menu bar app that visualizes the token savings from RTK — the CLI proxy that cuts Claude API consumption by 60–90%. Daily KPIs, a 7-day trend and your recent commands, at a glance. Free & open-source (MIT).">
+<meta property="og:title" content="RTKInfos">
+<meta property="og:description" content="Daily KPIs, a 7-day savings trend and recent commands — your RTK token savings, live, from the macOS menu bar.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2310b981'/%3E%3Cpath d='M22 64 L40 46 L54 58 L78 32' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='78' cy='32' r='7' fill='white'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#0a0f0d; --bg2:#0d1512; --panel:#111b17; --line:#1f312a;
+    --txt:#e6f1ec; --muted:#93a8a0; --faint:#6b827a;
+    --accent:#34d399; --accent2:#10b981; --accent-soft:rgba(52,211,153,.14);
+    --maxw:1100px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--txt);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,"Cascadia Code",monospace}
+
+  nav{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(12px);background:rgba(10,15,13,.72);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:750;letter-spacing:-.2px}
+  .logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#10b981,#34d399);display:grid;place-items:center;box-shadow:0 4px 14px rgba(16,185,129,.35)}
+  .nav-links{display:flex;gap:24px;align-items:center;color:var(--muted);font-size:14.5px}
+  .nav-links a:hover{color:var(--txt)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:11px;font-weight:650;font-size:15px;transition:transform .12s ease,box-shadow .12s ease,background .12s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn-primary{background:linear-gradient(135deg,#10b981,#34d399);color:#04130d;box-shadow:0 6px 22px rgba(16,185,129,.32)}
+  .btn-ghost{border:1px solid var(--line);color:var(--txt);background:transparent}
+  .btn-ghost:hover{border-color:#2c453b;background:var(--panel)}
+  .btn-sm{padding:8px 15px;font-size:14px;border-radius:9px}
+
+  header{padding:78px 0 36px;background:radial-gradient(820px 380px at 78% -8%,rgba(16,185,129,.16),transparent 62%)}
+  .hero-grid{display:grid;grid-template-columns:1.02fr 1fr;gap:48px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:6px 13px;border-radius:999px;font-size:13px;margin-bottom:22px}
+  .pill b{color:var(--accent)}
+  h1{font-size:clamp(36px,5.4vw,57px);line-height:1.05;font-weight:820;letter-spacing:-1.6px}
+  h1 .grad{background:linear-gradient(120deg,#6ee7b7,#10b981);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{max-width:540px;margin:20px 0 0;font-size:clamp(16px,2vw,19px);color:var(--muted)}
+  .cta{display:flex;gap:13px;flex-wrap:wrap;margin:30px 0 14px}
+  .meta{color:var(--faint);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 14px}
+  .meta b{color:var(--muted);font-weight:600}
+
+  /* signature dashboard mock */
+  .winwrap{filter:drop-shadow(0 30px 60px rgba(0,0,0,.55))}
+  .win{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--bg2)}
+  .titlebar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#0c1411;border-bottom:1px solid var(--line)}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+  .titlebar .name{margin-left:8px;font-size:12.5px;color:var(--faint)}
+  .titlebar .name b{color:var(--muted);font-weight:600}
+  .dash{padding:18px}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .kpi .n{font-size:20px;font-weight:800;letter-spacing:-.6px;color:var(--accent)}
+  .kpi .l{font-size:11px;color:var(--faint);margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
+  .chartlabel{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  .chart{display:flex;align-items:flex-end;gap:7px;height:84px;padding:0 2px;margin-bottom:16px}
+  .bar{flex:1;background:linear-gradient(180deg,#34d399,#10b981);border-radius:5px 5px 2px 2px;position:relative;min-height:6px}
+  .bar span{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:9.5px;color:var(--muted)}
+  .cmds{display:flex;flex-direction:column;gap:7px}
+  .cmd{display:flex;justify-content:space-between;align-items:center;font:12px/1 ui-monospace,Menlo,monospace;color:var(--muted);padding:7px 10px;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+  .cmd b{color:var(--accent);font-weight:700}
+
+  section{padding:74px 0;border-top:1px solid var(--line)}
+  .eyebrow{color:var(--accent);font-weight:700;font-size:12.5px;letter-spacing:1.4px;text-transform:uppercase}
+  .center{text-align:center}.center .eyebrow{display:block}
+  h2{font-size:clamp(27px,3.7vw,38px);font-weight:800;letter-spacing:-.7px;margin:9px 0 12px}
+  .lead{color:var(--muted);max-width:620px;font-size:17px}
+  .center .lead{margin-left:auto;margin-right:auto}
+
+  .grid{display:grid;gap:16px;margin-top:42px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;transition:border-color .15s,transform .15s}
+  .card:hover{border-color:#2c453b;transform:translateY(-2px)}
+  .card h3{font-size:16.5px;margin-bottom:5px;letter-spacing:-.2px}
+  .card p{color:var(--muted);font-size:14.5px}
+  .ico{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:21px;margin-bottom:14px}
+
+  .why{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:40px;display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;margin-top:8px}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px}
+  .stat .k{font-size:28px;font-weight:820;letter-spacing:-1px;color:var(--accent)}
+  .stat .v{color:var(--muted);font-size:13.5px;margin-top:2px}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:42px;counter-reset:s}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;position:relative}
+  .step::before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:22px;width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#10b981,#34d399);color:#04130d;font-weight:800;display:grid;place-items:center;font-size:15px}
+  .step h3{margin:6px 0 5px;font-size:16px}
+  .step p{color:var(--muted);font-size:14.5px}
+  .step code{background:#06100c;color:var(--accent);border-radius:6px;padding:2px 7px;font:12.5px/1.4 ui-monospace,Menlo,monospace}
+
+  .final{text-align:center;background:radial-gradient(620px 280px at 50% 120%,rgba(16,185,129,.16),transparent 66%)}
+  .final .cta{justify-content:center}
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:14px;text-align:center}
+  footer a{color:var(--accent);font-weight:600}
+  code{background:#06100c;border:1px solid var(--line);border-radius:6px;padding:2px 7px;font:13px/1.4 ui-monospace,Menlo,monospace;color:var(--accent)}
+
+  @media(max-width:880px){.hero-grid,.why{grid-template-columns:1fr;gap:30px}.why{padding:28px}.g3,.steps{grid-template-columns:1fr}.nav-links a:not(.btn){display:none}}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="logo"><svg width="19" height="19" viewBox="0 0 100 100"><path d="M22 64 L40 46 L54 58 L78 32" stroke="#04130d" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="78" cy="32" r="7" fill="#04130d"/></svg></span>RTKInfos</a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#why">Why</a>
+    <a href="#install">Install</a>
+    <a href="https://github.com/vincentlauriat/RTKInfos">GitHub</a>
+    <a class="btn btn-primary btn-sm" href="https://github.com/vincentlauriat/RTKInfos/releases/latest">Download</a>
+  </div>
+</div></nav>
+
+<header id="top"><div class="wrap">
+  <div class="hero-grid">
+    <div>
+      <span class="pill">📊 Built for <b>RTK</b> — saves 60–90% of Claude API tokens</span>
+      <h1>Your token savings,<br><span class="grad">live in the menu bar.</span></h1>
+      <p class="sub"><a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a> quietly cuts your Claude API token use by 60–90%. RTKInfos turns that into something you can see — daily KPIs, a 7-day trend and your recent commands, one click from the menu bar.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/vincentlauriat/RTKInfos/releases/latest">⬇︎ Download for macOS</a>
+        <a class="btn btn-ghost" href="https://github.com/vincentlauriat/RTKInfos">View on GitHub</a>
+      </div>
+      <p class="meta"><b>Free &amp; open-source (MIT)</b> · macOS 14+ · Requires RTK</p>
+    </div>
+
+    <div class="winwrap">
+      <div class="win" role="img" aria-label="RTKInfos dashboard: daily KPIs, a 7-day savings chart and recent commands">
+        <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="name"><b>RTKInfos</b> — Today</span></div>
+        <div class="dash">
+          <div class="kpis">
+            <div class="kpi"><div class="n">1.24M</div><div class="l">Tokens saved</div></div>
+            <div class="kpi"><div class="n">317</div><div class="l">Commands</div></div>
+            <div class="kpi"><div class="n">78%</div><div class="l">Avg savings</div></div>
+          </div>
+          <div class="chartlabel">Last 7 days · savings %</div>
+          <div class="chart" aria-hidden="true">
+            <div class="bar" style="height:62%"><span>71</span></div>
+            <div class="bar" style="height:78%"><span>83</span></div>
+            <div class="bar" style="height:55%"><span>64</span></div>
+            <div class="bar" style="height:88%"><span>90</span></div>
+            <div class="bar" style="height:70%"><span>76</span></div>
+            <div class="bar" style="height:82%"><span>85</span></div>
+            <div class="bar" style="height:74%"><span>78</span></div>
+          </div>
+          <div class="cmds">
+            <div class="cmd"><span>git status</span><b>82%</b></div>
+            <div class="cmd"><span>cargo build</span><b>88%</b></div>
+            <div class="cmd"><span>npm install</span><b>91%</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></header>
+
+<section id="features"><div class="wrap">
+  <div class="center">
+    <p class="eyebrow">## features</p>
+    <h2>Everything RTK saves, made visible</h2>
+    <p class="lead">A tiny native menu bar app that reads RTK's local database and turns raw numbers into a glanceable picture of your savings.</p>
+  </div>
+  <div class="grid g3">
+    <div class="card"><div class="ico">📡</div><h3>Real-time monitoring</h3><p>Watches RTK's <code class="mono">history.db</code> via FSEvents, with a polling fallback — updates the moment a command runs.</p></div>
+    <div class="card"><div class="ico">📈</div><h3>Daily KPIs</h3><p>Tokens saved, command count, average savings % and raw token usage for the day.</p></div>
+    <div class="card"><div class="ico">📊</div><h3>7-day trend</h3><p>A bar &amp; point chart of your daily savings percentage, so you can spot the pattern.</p></div>
+    <div class="card"><div class="ico">🧾</div><h3>Recent history</h3><p>The last 5 commands with their savings % and a relative timestamp.</p></div>
+    <div class="card"><div class="ico">🚨</div><h3>Status alerts</h3><p>Detects a missing RTK install or more than 7 days of inactivity, and tells you.</p></div>
+    <div class="card"><div class="ico">⚙️</div><h3>Preferences</h3><p>Launch at login, configurable polling interval and a custom database path.</p></div>
+  </div>
+</div></section>
+
+<section id="why"><div class="wrap">
+  <div class="why">
+    <div>
+      <p class="eyebrow">// why it exists</p>
+      <h2 style="text-align:left">Numbers you'd otherwise never see</h2>
+      <p class="lead">RTK does its work silently in the background. RTKInfos sits read-only on top of its database — a single <code class="mono">@Observable</code> source of truth driving a native SwiftUI dashboard — so the savings RTK earns you become tangible, day after day.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">60–90%</div><div class="v">Tokens RTK saves</div></div>
+      <div class="stat"><div class="k">Read-only</div><div class="v">Never writes to RTK's DB</div></div>
+      <div class="stat"><div class="k">FSEvents</div><div class="v">Live, event-driven updates</div></div>
+      <div class="stat"><div class="k">Native</div><div class="v">SwiftUI menu bar app</div></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="install"><div class="wrap">
+  <div class="center">
+    <p class="eyebrow">get started</p>
+    <h2>Up and running in a minute</h2>
+    <p class="lead">RTKInfos reads the database that <a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a> already keeps — so once RTK is set up, there's nothing else to configure.</p>
+  </div>
+  <div class="steps">
+    <div class="step"><h3>Have RTK installed</h3><p>RTKInfos visualizes <a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a>'s data, so install and configure it first.</p></div>
+    <div class="step"><h3>Download &amp; install</h3><p>Grab the latest <code>.dmg</code> and drag <code>RTKInfos.app</code> into <code>/Applications</code>.</p></div>
+    <div class="step"><h3>Launch</h3><p>Open it — the icon lands in your menu bar. Enable <em>Launch at Login</em> from Preferences.</p></div>
+  </div>
+</div></section>
+
+<section class="final"><div class="wrap">
+  <p class="eyebrow">ready?</p>
+  <h2>See what RTK is saving you</h2>
+  <p class="lead" style="margin:0 auto 6px">Free, open-source and native. macOS 14 Sonoma or later.</p>
+  <div class="cta">
+    <a class="btn btn-primary" href="https://github.com/vincentlauriat/RTKInfos/releases/latest">⬇︎ Download for macOS</a>
+    <a class="btn btn-ghost" href="https://github.com/vincentlauriat/RTKInfos#readme">Read the docs</a>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  RTKInfos · MIT License · © 2026 Vincent Lauriat ·
+  <a href="https://github.com/vincentlauriat/RTKInfos">github.com/vincentlauriat/RTKInfos</a>
+  · <a href="https://lauriat.fr/outils/rtkinfos/">lauriat.fr</a>
+</div></footer>
+
+</body>
+</html>
