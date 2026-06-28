@@ -18,7 +18,11 @@ clean-cli:
 APP            := RTKInfos
 DERIVED        := build/DerivedData
 BUILT_APP      := $(DERIVED)/Build/Products/Debug/$(APP).app
-STAGED_APP     := build/$(APP).app
+# Staged OUTSIDE the repo: ~/Documents is a macOS-protected location that
+# re-applies com.apple.provenance xattrs, which makes codesign --verify fail
+# ("resource fork ... detritus not allowed"). $(TMPDIR) (/var/folders/…) is not
+# protected, so the ad-hoc signature verifies there.
+STAGED_APP     := $(TMPDIR)$(APP)-debug.app
 
 # Build Debug sans signature.
 # macOS Sequoia ajoute des xattr com.apple.provenance/macl protégés par le kernel
@@ -31,8 +35,8 @@ build-debug:
 		-derivedDataPath $(DERIVED) CODE_SIGNING_ALLOWED=NO build
 	@git checkout -- Info.plist 2>/dev/null || true
 
-# Stage vers un répertoire propre (ditto strippe com.apple.provenance),
-# signe en ad-hoc, puis lance l'app.
+# Stage hors zone protégée ($(TMPDIR)), nettoie les xattr, signe en ad-hoc,
+# puis lance l'app.
 run-debug: build-debug
 	rm -rf "$(STAGED_APP)"
 	ditto "$(BUILT_APP)" "$(STAGED_APP)"
