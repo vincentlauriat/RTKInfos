@@ -45,6 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     )
 
     override init() {
+        RTKFonts.registerIfNeeded()
         let savedPath = UserDefaults.standard.string(forKey: "dbPath")
         let dbPath: String
         if let saved = savedPath, FileManager.default.fileExists(atPath: saved) {

@@ -106,11 +106,7 @@ private struct TraceRow: View {
     }
 
     private var savingsColor: Color {
-        switch cmd.savingsPct {
-        case 70...: return .green
-        case 40..<70: return .orange
-        default: return .red
-        }
+        rtkIntensity(cmd.savingsPct)
     }
 
     private var rowBackground: Color {
