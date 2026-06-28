@@ -61,12 +61,13 @@ struct DashboardView: View {
 
     private var toolbar: some View {
         HStack(spacing: 12) {
-            Image(systemName: "bolt.fill")
-                .foregroundStyle(.yellow)
-                .font(.title2)
+            Image(systemName: "diamond.fill")
+                .foregroundStyle(Color.rtkEmerald)
+                .font(.system(size: 14))
             VStack(alignment: .leading, spacing: 1) {
                 Text("RTK Token Savings")
-                    .font(.headline)
+                    .font(.rtkDisplay(15, weight: .semibold))
+                    .foregroundStyle(Color.rtkInk)
                 Text(snapshot.isDBMissing ? "rtk not detected" : "Today · \(formattedDate)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -155,6 +156,18 @@ struct DashboardView: View {
                         .font(.rtkLabel())
                         .tracking(1.4)
                         .foregroundStyle(Color.rtkSlate)
+                }
+
+                if let t = snapshot.todayStats {
+                    HStack(spacing: 8) {
+                        Text("TODAY")
+                            .font(.rtkLabel(9))
+                            .tracking(1.4)
+                            .foregroundStyle(Color.rtkMist)
+                        Text("\(rtkFormatTokens(t.savedTokens)) saved  ·  \(t.totalCommands) cmds  ·  \(Int(t.savingsPct))%")
+                            .font(.rtkData(11))
+                            .foregroundStyle(Color.rtkSlate)
+                    }
                 }
             }
         }
@@ -259,8 +272,9 @@ struct DashboardView: View {
                         Text("Avg%").frame(width: 40, alignment: .trailing)
                         Text("Impact").frame(width: 72, alignment: .trailing)
                     }
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .font(.rtkLabel(10))
+                    .tracking(0.4)
+                    .foregroundStyle(Color.rtkMist)
                     .padding(.horizontal, 10)
                     .padding(.bottom, 4)
 
@@ -285,7 +299,7 @@ struct DashboardView: View {
                             impactBar(cmd.impactRatio)
                                 .frame(width: 72, alignment: .trailing)
                         }
-                        .font(.system(.caption2, design: .monospaced))
+                        .font(.rtkData(11))
                         .padding(.vertical, 5)
                         .padding(.horizontal, 10)
                         .background(idx % 2 == 0 ? Color.primary.opacity(0.02) : Color.clear)
@@ -297,19 +311,24 @@ struct DashboardView: View {
     }
 
     private func impactBar(_ ratio: Double) -> some View {
-        let filled = max(1, Int(ratio * 10))
-        let empty = 10 - filled
-        return Text(String(repeating: "█", count: filled) + String(repeating: "░", count: empty))
-            .font(.system(size: 8, design: .monospaced))
-            .foregroundStyle(Color.green.opacity(0.6 + ratio * 0.4))
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.rtkEmerald.opacity(0.12))
+                Capsule()
+                    .fill(Color.rtkEmerald.opacity(0.55 + ratio * 0.45))
+                    .frame(width: max(3, geo.size.width * ratio))
+            }
+        }
+        .frame(height: 5)
     }
 
     // MARK: - Helpers
 
     private func sectionTitle(_ text: String) -> some View {
-        Text(text)
-            .font(.subheadline.bold())
-            .foregroundStyle(.primary)
+        Text(text.uppercased())
+            .font(.rtkLabel(11))
+            .tracking(1.6)
+            .foregroundStyle(Color.rtkSlate)
     }
 
     private var formattedDate: String {

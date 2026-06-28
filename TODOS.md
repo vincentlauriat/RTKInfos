@@ -18,17 +18,18 @@ Voir `PLAN.md` pour le design system complet et la justification.
 - [x] Bloc héros « tokens saved » en Display XL Geist
 
 ## Phase 2 — Affinage data viz
+- [x] `sectionTitle` en Geist label uppercase (cohérence avec COMPRESSION/TOKENS SAVED)
 - [ ] Chart 7 j → sparkline plus discrète (optionnel — le bar chart émeraude marche déjà)
-- [ ] `sectionTitle` en Geist label uppercase (cohérence avec COMPRESSION/TOKENS SAVED)
 
-## Phase 3 — Sections secondaires
+## Phase 3 — Sections secondaires ✅
 - [x] `Live Trace` : % en intensité émeraude (plus de rouge)
-- [ ] `Live Trace` : point pulsant à chaque nouvelle commande
-- [ ] `By Command` re-stylé (barres natives, suppression `█░`)
-- [ ] Bandeau `TODAY` compact (today stats ne sont plus affichées)
+- [x] `Live Trace` : point pulsant à chaque nouvelle commande (reduceMotion respecté)
+- [x] `Live Trace` + `By Command` : police Geist Mono
+- [x] `By Command` re-stylé (barres natives `Capsule`, suppression `█░`)
+- [x] Bandeau `TODAY` compact (saved · cmds · %)
 
 ## Phase 4 — Finitions
 - [x] Unifier la langue → **anglais partout** (libellés, dates en_US, bannières)
-- [ ] Glyphe ◆ custom (remplace `bolt.fill` jaune) — header + menu bar
+- [x] Glyphe ◆ custom (remplace `bolt.fill` jaune) — header + menu bar
 - [ ] Audit accessibilité (focus clavier, reduceMotion ok, contraste AA)
-- [ ] Capture finale avant/après
+- [ ] Chart sparkline (optionnel)
