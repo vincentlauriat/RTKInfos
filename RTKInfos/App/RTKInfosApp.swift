@@ -45,6 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     )
 
     override init() {
+        RTKFonts.registerIfNeeded()
         let savedPath = UserDefaults.standard.string(forKey: "dbPath")
         let dbPath: String
         if let saved = savedPath, FileManager.default.fileExists(atPath: saved) {
@@ -92,7 +93,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         guard let button = statusItem?.button else { return }
-        button.image = NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: "RTK")
+        button.image = NSImage(systemSymbolName: "diamond.fill", accessibilityDescription: "RTK")
         button.image?.isTemplate = true
         button.action = #selector(statusItemClicked)
         button.target = self

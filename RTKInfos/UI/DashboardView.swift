@@ -30,7 +30,7 @@ struct DashboardView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         statusBanners
                         if !snapshot.isDBMissing {
-                            kpisSection
+                            heroSection
                             chartSection
                             globalStatsSection
                             if showByCommand { topCommandsSection }
@@ -61,13 +61,14 @@ struct DashboardView: View {
 
     private var toolbar: some View {
         HStack(spacing: 12) {
-            Image(systemName: "bolt.fill")
-                .foregroundStyle(.yellow)
-                .font(.title2)
+            Image(systemName: "diamond.fill")
+                .foregroundStyle(Color.rtkEmerald)
+                .font(.system(size: 14))
             VStack(alignment: .leading, spacing: 1) {
                 Text("RTK Token Savings")
-                    .font(.headline)
-                Text(snapshot.isDBMissing ? "rtk non détecté" : "Aujourd'hui · \(formattedDate)")
+                    .font(.rtkDisplay(15, weight: .semibold))
+                    .foregroundStyle(Color.rtkInk)
+                Text(snapshot.isDBMissing ? "rtk not detected" : "Today · \(formattedDate)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -78,7 +79,7 @@ struct DashboardView: View {
                 Image(systemName: "arrow.clockwise")
             }
             .buttonStyle(.plain)
-            .help("Actualiser")
+            .help("Refresh")
 
             Divider().frame(height: 14)
 
@@ -89,7 +90,7 @@ struct DashboardView: View {
             }
             .buttonStyle(.plain)
             .opacity(showByCommand ? 1 : 0.4)
-            .help(showByCommand ? "Masquer By Command" : "Afficher By Command")
+            .help(showByCommand ? "Hide By Command" : "Show By Command")
 
             Button {
                 withAnimation(.easeInOut(duration: 0.2)) { showLiveTrace.toggle() }
@@ -98,7 +99,7 @@ struct DashboardView: View {
             }
             .buttonStyle(.plain)
             .opacity(showLiveTrace ? 1 : 0.4)
-            .help(showLiveTrace ? "Masquer Live Trace" : "Afficher Live Trace")
+            .help(showLiveTrace ? "Hide Live Trace" : "Show Live Trace")
 
             Divider().frame(height: 14)
 
@@ -108,7 +109,7 @@ struct DashboardView: View {
                 Image(systemName: "gearshape")
             }
             .buttonStyle(.plain)
-            .help("Préférences")
+            .help("Settings")
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -122,48 +123,52 @@ struct DashboardView: View {
             StatusBanner(
                 icon: "exclamationmark.triangle.fill",
                 color: .orange,
-                message: "rtk introuvable — installez rtk et exécutez des commandes pour commencer"
+                message: "rtk not found — install rtk and run some commands to get started"
             )
         } else if snapshot.isInactive {
             let days = daysSinceLastActivity
             StatusBanner(
                 icon: "clock.fill",
                 color: .secondary,
-                message: "Aucune activité depuis \(days) jour\(days > 1 ? "s" : "")"
+                message: "No activity for \(days) day\(days > 1 ? "s" : "")"
             )
         }
     }
 
-    // MARK: - KPIs
+    // MARK: - Hero (signature: compression gauge + saved total)
 
-    private var kpisSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            sectionTitle("Aujourd'hui")
-            HStack(spacing: 12) {
-                KPICard(
-                    value: snapshot.todayStats.map { formatTokens($0.savedTokens) } ?? "—",
-                    label: "Tokens économisés",
-                    icon: "arrow.down.circle.fill",
-                    color: .green
-                )
-                KPICard(
-                    value: snapshot.todayStats.map { "\($0.totalCommands)" } ?? "—",
-                    label: "Commandes",
-                    icon: "terminal.fill",
-                    color: .blue
-                )
-                KPICard(
-                    value: snapshot.todayStats.map { "\(Int($0.savingsPct))%" } ?? "—",
-                    label: "Savings moy.",
-                    icon: "percent",
-                    color: savingsColor
-                )
-                KPICard(
-                    value: snapshot.todayStats.map { formatTokens($0.inputTokens) } ?? "—",
-                    label: "Tokens bruts",
-                    icon: "doc.text.fill",
-                    color: .secondary
-                )
+    private var heroSection: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            if let g = snapshot.globalStats {
+                CompressionGauge(input: g.totalInputTokens, output: g.totalOutputTokens)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text(rtkFormatTokens(g.totalSavedTokens))
+                            .font(.rtkDisplay(44, weight: .bold))
+                            .monospacedDigit()
+                            .foregroundStyle(Color.rtkInk)
+                        Text("\(Int(g.avgSavingsPct))%")
+                            .font(.rtkData(15))
+                            .foregroundStyle(Color.rtkEmerald)
+                    }
+                    Text("TOKENS SAVED · ALL TIME")
+                        .font(.rtkLabel())
+                        .tracking(1.4)
+                        .foregroundStyle(Color.rtkSlate)
+                }
+
+                if let t = snapshot.todayStats {
+                    HStack(spacing: 8) {
+                        Text("TODAY")
+                            .font(.rtkLabel(9))
+                            .tracking(1.4)
+                            .foregroundStyle(Color.rtkMist)
+                        Text("\(rtkFormatTokens(t.savedTokens)) saved  ·  \(t.totalCommands) cmds  ·  \(Int(t.savingsPct))%")
+                            .font(.rtkData(11))
+                            .foregroundStyle(Color.rtkSlate)
+                    }
+                }
             }
         }
     }
@@ -172,9 +177,9 @@ struct DashboardView: View {
 
     private var chartSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            sectionTitle("7 derniers jours")
+            sectionTitle("Last 7 days")
             if snapshot.weekStats.isEmpty {
-                Text("Pas de données")
+                Text("No data")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
                     .frame(maxWidth: .infinity, minHeight: 120)
@@ -206,7 +211,7 @@ struct DashboardView: View {
                 }
                 .chartXAxis {
                     AxisMarks(values: .stride(by: .day)) { _ in
-                        AxisValueLabel(format: .dateTime.weekday(.abbreviated).locale(Locale(identifier: "fr_FR")))
+                        AxisValueLabel(format: .dateTime.weekday(.abbreviated).locale(Locale(identifier: "en_US")))
                         AxisGridLine()
                     }
                 }
@@ -227,30 +232,6 @@ struct DashboardView: View {
                     statsRow("Output tokens",  value: formatTokens(g.totalOutputTokens))
                     statsRow("Tokens saved",   value: "\(formatTokens(g.totalSavedTokens)) (\(Int(g.avgSavingsPct))%)")
                     statsRow("Exec time",      value: "\(formatDuration(g.totalExecTimeMs)) (avg \(g.avgExecTimeMs)ms)")
-
-                    // Efficiency meter
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text("Efficiency")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text("\(String(format: "%.1f", g.avgSavingsPct))%")
-                                .font(.caption2.bold())
-                                .foregroundStyle(colorForPct(g.avgSavingsPct))
-                        }
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 3)
-                                    .fill(Color.primary.opacity(0.08))
-                                RoundedRectangle(cornerRadius: 3)
-                                    .fill(colorForPct(g.avgSavingsPct).opacity(0.8))
-                                    .frame(width: geo.size.width * g.avgSavingsPct / 100)
-                            }
-                        }
-                        .frame(height: 6)
-                    }
-                    .padding(.top, 4)
                 }
                 .padding(12)
                 .background(Color.primary.opacity(0.03))
@@ -291,8 +272,9 @@ struct DashboardView: View {
                         Text("Avg%").frame(width: 40, alignment: .trailing)
                         Text("Impact").frame(width: 72, alignment: .trailing)
                     }
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .font(.rtkLabel(10))
+                    .tracking(0.4)
+                    .foregroundStyle(Color.rtkMist)
                     .padding(.horizontal, 10)
                     .padding(.bottom, 4)
 
@@ -317,7 +299,7 @@ struct DashboardView: View {
                             impactBar(cmd.impactRatio)
                                 .frame(width: 72, alignment: .trailing)
                         }
-                        .font(.system(.caption2, design: .monospaced))
+                        .font(.rtkData(11))
                         .padding(.vertical, 5)
                         .padding(.horizontal, 10)
                         .background(idx % 2 == 0 ? Color.primary.opacity(0.02) : Color.clear)
@@ -329,25 +311,30 @@ struct DashboardView: View {
     }
 
     private func impactBar(_ ratio: Double) -> some View {
-        let filled = max(1, Int(ratio * 10))
-        let empty = 10 - filled
-        return Text(String(repeating: "█", count: filled) + String(repeating: "░", count: empty))
-            .font(.system(size: 8, design: .monospaced))
-            .foregroundStyle(Color.green.opacity(0.6 + ratio * 0.4))
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Color.rtkEmerald.opacity(0.12))
+                Capsule()
+                    .fill(Color.rtkEmerald.opacity(0.55 + ratio * 0.45))
+                    .frame(width: max(3, geo.size.width * ratio))
+            }
+        }
+        .frame(height: 5)
     }
 
     // MARK: - Helpers
 
     private func sectionTitle(_ text: String) -> some View {
-        Text(text)
-            .font(.subheadline.bold())
-            .foregroundStyle(.primary)
+        Text(text.uppercased())
+            .font(.rtkLabel(11))
+            .tracking(1.6)
+            .foregroundStyle(Color.rtkSlate)
     }
 
     private var formattedDate: String {
         let fmt = DateFormatter()
         fmt.dateStyle = .long
-        fmt.locale = Locale(identifier: "fr_FR")
+        fmt.locale = Locale(identifier: "en_US")
         return fmt.string(from: Date())
     }
 
@@ -362,15 +349,11 @@ struct DashboardView: View {
     }
 
     private func colorForPct(_ pct: Double) -> Color {
-        switch pct {
-        case 70...: return .green
-        case 40..<70: return .orange
-        default: return .red
-        }
+        rtkIntensity(pct)
     }
 
     private func barColor(for pct: Double) -> Color {
-        colorForPct(pct).opacity(0.8)
+        rtkIntensity(pct)
     }
 
     private func formatTokens(_ n: Int) -> String {
