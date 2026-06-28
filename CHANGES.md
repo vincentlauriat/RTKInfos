@@ -1,6 +1,25 @@
 # Changelog
 
-## Unreleased
+## v1.1.0 — 2026-06-28
+
+### Added
+- **"Compression Gauge" UX redesign** — the dashboard is rebuilt around one
+  signature element: a horizontal gauge showing raw `input` compressed down to
+  `output`, with the reclaimed ("killed") tokens painted in emerald.
+- Embedded **Geist** + **Geist Mono** fonts for a distinct, technical identity.
+- Compact `Today` strip (saved · commands · rate).
+- `Live Trace` emerald dot that pulses on each new command (respects Reduce Motion).
+- `make build-debug` / `make run-debug` targets for launching the app locally
+  (works around the macOS Sequoia codesign xattr issue).
+
+### Changed
+- Single emerald accent throughout; the old red/orange/green "traffic-light"
+  coloring is gone. Low-signal commands read as neutral gray, never judged.
+- Entire interface is now in **English** (labels, dates, status banners).
+- `By Command` impact bars are native SwiftUI capsules (no more ASCII `█░`).
+- Header glyph is a diamond ◆ (window + menu bar), replacing the yellow bolt.
+- CLI labels renamed to reflect the weighted figure: "Moyenne glob." →
+  "Taux global", "Moyenne" (7d) → "Taux 7j", "Moy. savings" → "Taux savings".
 
 ### Fixed
 - Savings percentage was computed as `AVG(savings_pct)` (unweighted mean of
@@ -11,11 +30,6 @@
 - 7-day average in the CLI (`summary` and TUI) had the same flaw: it averaged
   the per-day percentages instead of weighting by each day's volume. Now uses
   `100 * SUM(saved) / SUM(input)` over the week.
-
-### Changed
-- CLI labels renamed to reflect the weighted nature of the figure:
-  "Moyenne glob." → "Taux global", "Moyenne" (7d) → "Taux 7j",
-  "Moy. savings" → "Taux savings".
 
 ## v1.0.0 — 2026-05-05
 

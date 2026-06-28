@@ -4,12 +4,15 @@ A native macOS app that visualizes token savings from [rtk](https://github.com/r
 
 ## Features
 
+- **Compression gauge** — the signature view: raw `input` compressed down to `output`, with the reclaimed ("killed") tokens highlighted in emerald
+- **Volume-weighted savings rate** — accurate all-time and per-period efficiency (`SUM(saved) / SUM(input)`), not a misleading average of percentages
 - **Real-time monitoring** — watches `history.db` via FSEvents with polling fallback
-- **Daily KPIs** — tokens saved, command count, average savings %, raw token usage
-- **7-day chart** — bar + point chart of daily savings percentage
-- **Recent history** — last 5 commands with savings % and relative timestamp
+- **Live Trace** — streaming side panel of the latest commands, newest first
+- **7-day chart** — daily savings, color-encoded by intensity (no traffic-light coloring)
+- **By Command** — top commands ranked by tokens saved, with native impact bars
 - **Status alerts** — detects missing rtk install or inactivity > 7 days
 - **Preferences** — launch at login, polling interval, custom DB path
+- **Auto-update** — Sparkle background updates, prompts before installing
 
 ## Requirements
 
@@ -59,17 +62,23 @@ AppDelegate
             └── TrackingRepository ─────────────────── history.db (read-only)
 
 SwiftUI Views
-    ├── DashboardView  ←── StatsModel.snapshot
-    └── SettingsView   ←── @AppStorage (UserDefaults)
+    ├── DashboardView     ←── StatsModel.snapshot
+    │     ├── CompressionGauge   (signature element)
+    │     └── CommandTraceView   (Live Trace panel)
+    ├── SettingsView      ←── @AppStorage (UserDefaults)
+    └── DesignSystem/RTKTheme   (color tokens, Geist fonts, intensity scale)
 ```
 
 | Component | Role |
 |-----------|------|
-| `AppDelegate` | App lifecycle, initializes `StatsModel` from `UserDefaults` |
+| `AppDelegate` | App lifecycle, initializes `StatsModel` from `UserDefaults`, registers fonts |
 | `StatsModel` | Observable source of truth, drives all UI updates |
 | `DBWatcher` | Watches `history.db` via FSEvents + polling fallback, emits `AsyncStream<Void>` |
-| `TrackingRepository` | Read-only SQLite access to rtk's database |
-| `DashboardView` | Main window: KPIs, 7-day chart, recent command history |
+| `TrackingRepository` | Read-only SQLite access to rtk's database (volume-weighted aggregates) |
+| `DashboardView` | Main window: compression gauge, saved hero, 7-day chart, By Command |
+| `CompressionGauge` | Signature view — animated input→output compression bar |
+| `CommandTraceView` | Live Trace side panel — streaming recent commands |
+| `RTKTheme` | Design system: emerald color tokens, Geist fonts, intensity scale |
 | `SettingsView` | Preferences: launch at login, polling interval, DB path |
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for a detailed breakdown.

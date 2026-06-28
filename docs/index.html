@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RTKInfos — See your RTK token savings, live, from the menu bar</title>
-<meta name="description" content="A native macOS menu bar app that visualizes the token savings from RTK — the CLI proxy that cuts Claude API consumption by 60–90%. Daily KPIs, a 7-day trend and your recent commands, at a glance. Free & open-source (MIT).">
+<meta name="description" content="A native macOS menu bar app that visualizes the token savings from RTK — the CLI proxy that cuts Claude API consumption by 60–90%. A compression gauge, a 7-day trend and a live command trace, at a glance. Free & open-source (MIT).">
 <meta property="og:title" content="RTKInfos">
-<meta property="og:description" content="Daily KPIs, a 7-day savings trend and recent commands — your RTK token savings, live, from the macOS menu bar.">
+<meta property="og:description" content="A compression gauge, a 7-day savings trend and a live command trace — your RTK token savings, live, from the macOS menu bar.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2310b981'/%3E%3Cpath d='M22 64 L40 46 L54 58 L78 32' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='78' cy='32' r='7' fill='white'/%3E%3C/svg%3E">
@@ -124,7 +124,7 @@
     <div>
       <span class="pill">📊 Built for <b>RTK</b> — saves 60–90% of Claude API tokens</span>
       <h1>Your token savings,<br><span class="grad">live in the menu bar.</span></h1>
-      <p class="sub"><a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a> quietly cuts your Claude API token use by 60–90%. RTKInfos turns that into something you can see — daily KPIs, a 7-day trend and your recent commands, one click from the menu bar.</p>
+      <p class="sub"><a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a> quietly cuts your Claude API token use by 60–90%. RTKInfos turns that into something you can see — a compression gauge, a 7-day trend and a live command trace, one click from the menu bar.</p>
       <div class="cta">
         <a class="btn btn-primary" href="https://github.com/vincentlauriat/RTKInfos/releases/latest">⬇︎ Download for macOS</a>
         <a class="btn btn-ghost" href="https://github.com/vincentlauriat/RTKInfos">View on GitHub</a>
@@ -139,7 +139,7 @@
           <div class="kpis">
             <div class="kpi"><div class="n">1.24M</div><div class="l">Tokens saved</div></div>
             <div class="kpi"><div class="n">317</div><div class="l">Commands</div></div>
-            <div class="kpi"><div class="n">78%</div><div class="l">Avg savings</div></div>
+            <div class="kpi"><div class="n">78%</div><div class="l">Savings rate</div></div>
           </div>
           <div class="chartlabel">Last 7 days · savings %</div>
           <div class="chart" aria-hidden="true">
@@ -170,9 +170,9 @@
   </div>
   <div class="grid g3">
     <div class="card"><div class="ico">📡</div><h3>Real-time monitoring</h3><p>Watches RTK's <code class="mono">history.db</code> via FSEvents, with a polling fallback — updates the moment a command runs.</p></div>
-    <div class="card"><div class="ico">📈</div><h3>Daily KPIs</h3><p>Tokens saved, command count, average savings % and raw token usage for the day.</p></div>
-    <div class="card"><div class="ico">📊</div><h3>7-day trend</h3><p>A bar &amp; point chart of your daily savings percentage, so you can spot the pattern.</p></div>
-    <div class="card"><div class="ico">🧾</div><h3>Recent history</h3><p>The last 5 commands with their savings % and a relative timestamp.</p></div>
+    <div class="card"><div class="ico">📉</div><h3>Compression gauge</h3><p>The signature view: raw input compressed down to output, with the reclaimed tokens highlighted in emerald.</p></div>
+    <div class="card"><div class="ico">📊</div><h3>7-day trend</h3><p>Your daily savings, color-encoded by intensity, so you can spot the pattern at a glance.</p></div>
+    <div class="card"><div class="ico">🧾</div><h3>Live Trace</h3><p>A streaming side panel of your latest commands, newest first, each with its savings.</p></div>
     <div class="card"><div class="ico">🚨</div><h3>Status alerts</h3><p>Detects a missing RTK install or more than 7 days of inactivity, and tells you.</p></div>
     <div class="card"><div class="ico">⚙️</div><h3>Preferences</h3><p>Launch at login, configurable polling interval and a custom database path.</p></div>
   </div>
