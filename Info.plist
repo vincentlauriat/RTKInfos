@@ -26,7 +26,7 @@
 	<key>SUFeedURL</key>
 	<string>https://raw.githubusercontent.com/vincentlauriat/RTKInfos/main/appcast.xml</string>
 	<key>SUPublicEDKey</key>
-   	<string>06iH388dPulDRG/Kzgkur23W3uExxmgmmhCn0B6jwuA=</string>
+   	<string>9PD2SBwLL4XoycyAGzaE+gO7ctuxSfuFMMajiZdXhXQ=</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUScheduledCheckInterval</key>
