@@ -5,10 +5,11 @@
 #   e.g. ./scripts/build-release.sh 1.0.0
 #
 # One-time setup (see docs/RELEASE.md):
-#   1. Generate Sparkle EdDSA keys:
-#        .sparkle-tools/bin/generate_keys --account "RTKInfos"
-#      Copy the public key into Info.plist > SUPublicEDKey.
-#      The private key is stored in your Keychain automatically.
+#   1. Sparkle EdDSA signing key:
+#      RTKInfos reuses the MarkdownViewer EdDSA key (Keychain account
+#      "MarkdownViewer"); its public half is in Info.plist > SUPublicEDKey
+#      (9PD2SBwLL4XoycyAGzaE+gO7ctuxSfuFMMajiZdXhXQ=). Do NOT regenerate it —
+#      that would break auto-update for every installed client.
 #
 #   2. Store notarytool credentials:
 #        xcrun notarytool store-credentials "RTKInfos-Notary" \
@@ -166,7 +167,7 @@ if [ ! -x "$SPARKLE_TOOLS/bin/sign_update" ]; then
 fi
 
 echo "→ Signing DMG with Sparkle EdDSA key"
-SPARKLE_SIG_LINE=$("$SPARKLE_TOOLS/bin/sign_update" --account "RTKInfos" "$DMG")
+SPARKLE_SIG_LINE=$("$SPARKLE_TOOLS/bin/sign_update" --account "MarkdownViewer" "$DMG")
 
 # sparkle:version must be CFBundleVersion (monotonic integer), NOT the marketing version.
 # Sparkle's comparator splits by "." — putting "1.0.0" here would compare as [1,0,0]

@@ -20,6 +20,8 @@
 - Header glyph is a diamond ◆ (window + menu bar), replacing the yellow bolt.
 - CLI labels renamed to reflect the weighted figure: "Moyenne glob." →
   "Taux global", "Moyenne" (7d) → "Taux 7j", "Moy. savings" → "Taux savings".
+- Sparkle update-signing key changed. **Users on v1.0.0 must download v1.1.0
+  manually once**; auto-update resumes for all later versions.
 
 ### Fixed
 - Savings percentage was computed as `AVG(savings_pct)` (unweighted mean of
