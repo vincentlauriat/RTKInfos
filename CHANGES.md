@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Savings percentage was computed as `AVG(savings_pct)` (unweighted mean of
+  per-command percentages), which understated the real figure dramatically
+  (7.4% reported vs 66.2% actual on the reference DB). All aggregates
+  (`todayStats`, `weekStats`, `globalStats`, `topCommands`) now use the
+  volume-weighted ratio `100 * SUM(saved_tokens) / SUM(input_tokens)`.
+- 7-day average in the CLI (`summary` and TUI) had the same flaw: it averaged
+  the per-day percentages instead of weighting by each day's volume. Now uses
+  `100 * SUM(saved) / SUM(input)` over the week.
+
+### Changed
+- CLI labels renamed to reflect the weighted nature of the figure:
+  "Moyenne glob." → "Taux global", "Moyenne" (7d) → "Taux 7j",
+  "Moy. savings" → "Taux savings".
+
 ## v1.0.0 — 2026-05-05
 
 Initial public release.

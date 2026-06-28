@@ -88,7 +88,7 @@ public final class TrackingRepository {
                 COALESCE(SUM(input_tokens), 0) as total_input,
                 COALESCE(SUM(output_tokens), 0) as total_output,
                 COALESCE(SUM(saved_tokens), 0) as total_saved,
-                COALESCE(AVG(savings_pct), 0.0) as avg_savings
+                COALESCE(100.0 * SUM(saved_tokens) / NULLIF(SUM(input_tokens), 0), 0.0) as avg_savings
             FROM commands
             WHERE timestamp >= ? AND timestamp < ?
         """, todayStr + "T00:00:00Z", tomorrowStr + "T00:00:00Z")
@@ -122,7 +122,7 @@ public final class TrackingRepository {
                 COALESCE(SUM(input_tokens), 0),
                 COALESCE(SUM(output_tokens), 0),
                 COALESCE(SUM(saved_tokens), 0),
-                COALESCE(AVG(savings_pct), 0.0)
+                COALESCE(100.0 * SUM(saved_tokens) / NULLIF(SUM(input_tokens), 0), 0.0)
             FROM commands
             WHERE timestamp >= ?
             GROUP BY day
@@ -194,7 +194,7 @@ public final class TrackingRepository {
                 COALESCE(SUM(input_tokens), 0) as total_input,
                 COALESCE(SUM(output_tokens), 0) as total_output,
                 COALESCE(SUM(saved_tokens), 0) as total_saved,
-                COALESCE(AVG(savings_pct), 0.0) as avg_savings,
+                COALESCE(100.0 * SUM(saved_tokens) / NULLIF(SUM(input_tokens), 0), 0.0) as avg_savings,
                 COALESCE(SUM(exec_time_ms), 0) as total_exec_ms,
                 COALESCE(AVG(exec_time_ms), 0.0) as avg_exec_ms
             FROM commands
@@ -222,7 +222,7 @@ public final class TrackingRepository {
                 rtk_cmd,
                 COUNT(*) as cnt,
                 COALESCE(SUM(saved_tokens), 0) as total_saved,
-                COALESCE(AVG(savings_pct), 0.0) as avg_pct,
+                COALESCE(100.0 * SUM(saved_tokens) / NULLIF(SUM(input_tokens), 0), 0.0) as avg_pct,
                 COALESCE(SUM(exec_time_ms), 0) as total_ms
             FROM commands
             GROUP BY rtk_cmd

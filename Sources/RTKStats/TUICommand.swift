@@ -76,7 +76,7 @@ struct TUICommand {
         if let today = snapshot.todayStats {
             print(ANSI.bold("  AUJOURD'HUI"))
             print("  Commandes     \(ANSI.cyan(String(today.totalCommands).padded(to: 8)))  Tokens sauvés  \(ANSI.green(formatTokens(today.savedTokens)))")
-            print("  Moy. savings  \(ANSI.green(String(format: "%.1f%%", today.savingsPct)))")
+            print("  Taux savings  \(ANSI.green(String(format: "%.1f%%", today.savingsPct)))")
         } else {
             print("  AUJOURD'HUI   aucune commande")
         }
@@ -86,8 +86,11 @@ struct TUICommand {
             print(ANSI.bold("  7 DERNIERS JOURS"))
             let pcts = snapshot.weekStats.map(\.savingsPct)
             print("  \(weekBar(pcts: pcts, plain: false))")
-            let avg = pcts.reduce(0, +) / Double(pcts.count)
-            print("  Moyenne : \(ANSI.green(String(format: "%.1f%%", avg)))")
+            // Volume-weighted rate, not the mean of per-day percentages.
+            let savedSum = snapshot.weekStats.reduce(0) { $0 + $1.savedTokens }
+            let inputSum = snapshot.weekStats.reduce(0) { $0 + $1.inputTokens }
+            let avg = inputSum > 0 ? 100.0 * Double(savedSum) / Double(inputSum) : 0
+            print("  Taux 7j : \(ANSI.green(String(format: "%.1f%%", avg)))")
             print("")
         }
 
