@@ -1,103 +1,87 @@
 # Release Process
 
-RTKInfos is distributed as a notarized `.dmg` outside the Mac App Store.
+RTKInfos is distributed as a notarized `.dmg` outside the Mac App Store, with
+in-app updates delivered through Sparkle.
 
-## Prerequisites
+## Prerequisites (already set up on this machine)
 
-- Apple Developer account (99 $/year)
-- **Developer ID Application** certificate installed in Keychain
-- Xcode command-line tools: `xcode-select --install`
-- `create-dmg`: `brew install create-dmg`
-- Notarization credentials stored:
+- **Developer ID Application** certificate in the Keychain:
+  `Developer ID Application: Vincent LAURIAT (KFLACS69T9)`
+- **Notarization profile** `AppliMacVincentGithub` in the Keychain (shared with
+  the MarkdownViewer project). To recreate it:
+  ```bash
+  xcrun notarytool store-credentials "AppliMacVincentGithub" \
+    --apple-id "vincent@lauriat.fr" --team-id "KFLACS69T9"
+  ```
+- **Sparkle EdDSA signing key** — RTKInfos reuses the MarkdownViewer key
+  (Keychain account `MarkdownViewer`; its public half
+  `9PD2SBwLL4XoycyAGzaE+gO7ctuxSfuFMMajiZdXhXQ=` is in `Info.plist > SUPublicEDKey`).
+  **Never regenerate it** — doing so breaks auto-update for every installed client.
+- `xcodegen`: `brew install xcodegen`
 
-```bash
-xcrun notarytool store-credentials AC_PASSWORD \
-  --apple-id your@email.com \
-  --team-id XXXXXXXXXX
-```
+## Release steps
 
-## Automated release
+1. **Bump the version** in `project.yml`:
+   - `MARKETING_VERSION` (e.g. `1.1.0`)
+   - `CURRENT_PROJECT_VERSION` — must increase monotonically (integer). Sparkle
+     compares this as `sparkle:version`; a non-increasing value silently skips updates.
 
-```bash
-./scripts/build-release.sh 1.2.0
-```
+2. **Update `CHANGES.md`** with the new version section.
 
-The script performs these steps:
+3. **Commit, then tag:**
+   ```bash
+   git add project.yml CHANGES.md
+   git commit -m "release: prepare vX.Y.Z"
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push && git push origin vX.Y.Z
+   ```
 
-1. **Generate Xcode project** via `xcodegen generate`
-2. **Archive** in Xcode: Product → Archive → Distribute App → Direct Distribution
-3. **Notarize**: submits the app to Apple's notarization service and waits for approval
-4. **Staple**: runs `xcrun stapler staple` to attach the notarization ticket
-5. **Package**: wraps the `.app` in a `.dmg` via `create-dmg`
-6. **Tag**: creates a git tag `v1.2.0`
+4. **Build, sign, notarize, package** — produces `RTKInfos-X.Y.Z.dmg` and rewrites
+   `appcast.xml`:
+   ```bash
+   SIGNING_IDENTITY="Developer ID Application: Vincent LAURIAT (KFLACS69T9)" \
+     ./scripts/build-release.sh X.Y.Z
+   ```
+   The script cleans `build/`, builds Release (`xcodegen` + `xcodebuild`), stages to
+   a clean dir (strips `com.apple.provenance` xattrs), codesigns the Sparkle
+   framework + app with Hardened Runtime, builds the DMG via `hdiutil`, notarizes
+   through `AppliMacVincentGithub`, staples, and EdDSA-signs the DMG.
 
-## Manual steps (if script fails)
+5. **Publish the GitHub release:**
+   ```bash
+   gh release create vX.Y.Z ./RTKInfos-X.Y.Z.dmg --title "vX.Y.Z" --notes "…"
+   ```
 
-### 1. Generate project and archive
+6. **Commit the refreshed appcast:**
+   ```bash
+   git add appcast.xml
+   git commit -m "release: appcast for vX.Y.Z"
+   git push
+   ```
+   Existing Sparkle clients pick up the update on their next check.
 
-```bash
-xcodegen generate
-```
+## Notes
 
-Then in Xcode: **Product → Archive**.
-
-### 2. Export for Direct Distribution
-
-In the Organizer window: select the archive → **Distribute App** → **Direct Distribution** → export the `.app`.
-
-### 3. Notarize
-
-```bash
-xcrun notarytool submit RTKInfos.zip \
-  --keychain-profile AC_PASSWORD \
-  --wait
-```
-
-### 4. Staple
-
-```bash
-xcrun stapler staple RTKInfos.app
-```
-
-### 5. Create DMG
-
-```bash
-create-dmg \
-  --volname "RTKInfos" \
-  --window-pos 200 120 \
-  --window-size 600 400 \
-  --icon-size 100 \
-  --icon "RTKInfos.app" 175 190 \
-  --app-drop-link 425 190 \
-  "RTKInfos-1.2.0.dmg" \
-  "RTKInfos.app"
-```
-
-### 6. Tag and push
-
-```bash
-git tag v1.2.0
-git push origin v1.2.0
-```
+- `sparkle:version` in `appcast.xml` is `CFBundleVersion` (a monotonic integer),
+  **not** the marketing version.
+- The macOS Sequoia `com.apple.provenance` xattr breaks `codesign --force`; the
+  script works around it with `CODE_SIGNING_ALLOWED=NO` plus a `ditto` scrub.
+- If `notarytool store-credentials` returns HTTP 401 "account does not exist",
+  the Apple ID is `vincent@lauriat.fr` (not the gmail address) and the team is
+  `KFLACS69T9`.
 
 ## Pre-release checklist
 
-- [ ] `swift test` passes (11/11)
-- [ ] App launches and detects rtk database
-- [ ] Dashboard displays correct KPIs
-- [ ] Chart renders 7-day data
-- [ ] Refresh button updates stats
-- [ ] Settings: launch at login toggles correctly
-- [ ] Settings: DB path reset works
-- [ ] App survives window close and reopens from Dock
-- [ ] Notarization ticket is stapled (Gatekeeper passes)
-- [ ] DMG mounts and drag-to-Applications works
+- [ ] `swift test` passes
+- [ ] `make run-debug` launches; the dashboard shows correct figures
+- [ ] Compression gauge, 7-day chart, By Command, Live Trace all render
+- [ ] DMG mounts, Gatekeeper passes (stapled), drag-to-Applications works
 
-## Versioning
+## Versioning (SemVer)
 
-This project uses [Semantic Versioning](https://semver.org/):
-- **MAJOR**: breaking changes to the rtk database schema compatibility
-- **MINOR**: new features (new metrics, chart types, settings)
-- **PATCH**: bug fixes, UI tweaks, performance improvements
+- **MAJOR** — breaking rtk database schema compatibility
+- **MINOR** — new features
+- **PATCH** — bug fixes, UI tweaks, performance
 
-Update `CFBundleShortVersionString` in `Info.plist` before archiving.
+Bump both `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `project.yml`
+(`Info.plist` references them as `$(MARKETING_VERSION)` / `$(CURRENT_PROJECT_VERSION)`).
