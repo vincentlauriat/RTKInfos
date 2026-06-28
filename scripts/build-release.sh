@@ -11,9 +11,10 @@
 #      (9PD2SBwLL4XoycyAGzaE+gO7ctuxSfuFMMajiZdXhXQ=). Do NOT regenerate it —
 #      that would break auto-update for every installed client.
 #
-#   2. Store notarytool credentials:
-#        xcrun notarytool store-credentials "RTKInfos-Notary" \
-#          --apple-id "your@email.com" --team-id "XXXXXXXXXX"
+#   2. Notarization uses the existing keychain profile "AppliMacVincentGithub"
+#      (shared with MarkdownViewer). To recreate it:
+#        xcrun notarytool store-credentials "AppliMacVincentGithub" \
+#          --apple-id "vincent@lauriat.fr" --team-id "KFLACS69T9"
 #
 # Override defaults:
 #   SIGNING_IDENTITY="Developer ID Application: …" ./scripts/build-release.sh 1.0.0
@@ -42,6 +43,8 @@ echo "→ xcodegen generate"
 xcodegen generate >/dev/null
 
 # 3. Build Release
+# Start from a clean build/ to avoid stale-state and concurrent-build failures.
+rm -rf "$ROOT/build"
 # CODE_SIGNING_ALLOWED=NO works around the macOS Sequoia com.apple.provenance
 # xattr that codesign --force rejects. We sign manually below after a ditto scrub.
 echo "→ xcodebuild Release"
@@ -62,7 +65,7 @@ fi
 # Set SIGNING_IDENTITY to your "Developer ID Application: Name (TEAMID)" certificate.
 # Find yours with: security find-identity -v -p codesigning | grep "Developer ID"
 SIGNING_IDENTITY="${SIGNING_IDENTITY:?Set SIGNING_IDENTITY to your Developer ID certificate, e.g. SIGNING_IDENTITY='Developer ID Application: Your Name (TEAMID)' ./scripts/build-release.sh $VERSION}"
-NOTARY_PROFILE="${NOTARY_PROFILE:-RTKInfos-Notary}"
+NOTARY_PROFILE="${NOTARY_PROFILE:-AppliMacVincentGithub}"
 
 STAGING_DIR="$(mktemp -d)"
 STAGING="$STAGING_DIR/RTKInfos.app"
