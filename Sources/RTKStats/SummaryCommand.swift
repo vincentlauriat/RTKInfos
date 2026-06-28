@@ -33,8 +33,12 @@ struct SummaryCommand {
             print(p.bold("  7 derniers jours"))
             let pcts = snapshot.weekStats.map(\.savingsPct)
             print("  \(weekBar(pcts: pcts, plain: plain))")
-            let avg = pcts.reduce(0, +) / Double(pcts.count)
-            print("  Moyenne       : \(p.green(String(format: "%.1f%%", avg)))")
+            // Volume-weighted rate, not the mean of per-day percentages
+            // (a 3-command day must not weigh as much as a 5000-command day).
+            let savedSum = snapshot.weekStats.reduce(0) { $0 + $1.savedTokens }
+            let inputSum = snapshot.weekStats.reduce(0) { $0 + $1.inputTokens }
+            let avg = inputSum > 0 ? 100.0 * Double(savedSum) / Double(inputSum) : 0
+            print("  Taux 7j       : \(p.green(String(format: "%.1f%%", avg)))")
         }
 
         if let global = snapshot.globalStats {
@@ -42,7 +46,7 @@ struct SummaryCommand {
             print(p.bold("  Total"))
             print("  Commandes     : \(p.cyan(String(global.totalCommands)))")
             print("  Tokens sauvés : \(p.green(formatTokens(global.totalSavedTokens)))")
-            print("  Moyenne glob. : \(p.green(String(format: "%.1f%%", global.avgSavingsPct)))")
+            print("  Taux global   : \(p.green(String(format: "%.1f%%", global.avgSavingsPct)))")
         }
 
         if snapshot.isInactive {
