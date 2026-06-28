@@ -19,7 +19,10 @@ RTKInfos is a native macOS application built with SwiftUI that reads from rtk's 
 │                                                          │
 │  SwiftUI Scene                                           │
 │  ├── DashboardView  ←── @Environment(StatsModel)         │
-│  └── SettingsView   ←── @AppStorage (UserDefaults)       │
+│  │     ├── CompressionGauge   (signature element)        │
+│  │     └── CommandTraceView   (Live Trace panel)         │
+│  ├── SettingsView   ←── @AppStorage (UserDefaults)       │
+│  └── DesignSystem/RTKTheme  (tokens, Geist, intensity)   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -152,29 +155,30 @@ StatsSnapshot      — complete UI state snapshot (immutable)
 
 Main application window. Receives `StatsModel` via `@Environment`.
 
-**Layout**:
+**Layout**: an `HSplitView` — the dashboard on the left, the Live Trace panel on the right (togglable).
 ```
-┌─────────────────────────────────┐
-│ Toolbar (title, refresh, prefs) │
-├─────────────────────────────────┤
-│ Status banner (if needed)       │
-│ ─────────────────────────────── │
-│ KPI cards (4 × tokens/cmds/%)   │
-│ 7-day savings chart             │
-│ Recent commands history         │
-└─────────────────────────────────┘
+┌───────────────────────────────┬───────────────┐
+│ Toolbar (◆ title, toggles)    │ LIVE TRACE    │
+├───────────────────────────────┤  •  cmd  %    │
+│ Status banner (if needed)     │  •  cmd  %    │
+│ COMPRESSION gauge (signature) │  •  cmd  %    │
+│ 17.9M saved · hero number     │  …            │
+│ TODAY strip                   │               │
+│ 7-day chart (intensity bars)  │               │
+│ ALL TIME stats                │               │
+│ BY COMMAND (native bars)      │               │
+└───────────────────────────────┴───────────────┘
 ```
 
-**Conditional rendering**: KPI, chart, and history sections are hidden when `isDBMissing` is true — only the status banner is shown.
+**Conditional rendering**: the data sections are hidden when `isDBMissing` is true — only the status banner is shown.
 
-**Color coding** (savings %):
-- ≥ 70% → green
-- 40–69% → orange
-- < 40% → red
+**Color coding** — a single emerald accent, scaled by *intensity* (see `rtkIntensity` in `RTKTheme`): low-signal commands (< 35 %) read as neutral gray, real savings ramp up the emerald. No red/orange "traffic-light" coloring.
 
 **Sub-components**:
-- `KPICard` — reusable metric card with icon, value, label, and tinted background.
+- `CompressionGauge` — the signature element (`UI/CompressionGauge.swift`): an animated `input → output` bar with the reclaimed tokens in emerald.
+- `CommandTraceView` — the Live Trace side panel (`UI/CommandTraceView.swift`).
 - `StatusBanner` — alert banner for DB missing or inactivity states.
+- `RTKTheme` (`DesignSystem/RTKTheme.swift`) — color tokens, Geist font helpers, the `rtkIntensity` scale, and embedded-font registration.
 
 ---
 
