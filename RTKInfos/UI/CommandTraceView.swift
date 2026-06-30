@@ -36,6 +36,7 @@ struct CommandTraceView: View {
                 .frame(width: 7, height: 7)
                 .scaleEffect(pulse ? 1.9 : 1)
                 .opacity(pulse ? 1 : 0.85)
+                .accessibilityHidden(true)
             Text("LIVE TRACE")
                 .font(.rtkLabel(11))
                 .tracking(1.5)
@@ -43,7 +44,7 @@ struct CommandTraceView: View {
             Spacer()
             Text("\(snapshot.recentCommands.count) cmds")
                 .font(.rtkData(10))
-                .foregroundStyle(Color.rtkMist)
+                .foregroundStyle(Color.rtkSlate)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
@@ -77,8 +78,12 @@ struct CommandTraceView: View {
             }
             .onChange(of: snapshot.recentCommands.count) { _, _ in
                 if let first = snapshot.recentCommands.first {
-                    withAnimation(.easeOut(duration: 0.2)) {
+                    if reduceMotion {
                         proxy.scrollTo(first.timestamp, anchor: .top)
+                    } else {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            proxy.scrollTo(first.timestamp, anchor: .top)
+                        }
                     }
                 }
             }
@@ -97,7 +102,7 @@ private struct TraceRow: View {
         HStack(spacing: 8) {
             Text(timeString)
                 .font(.rtkData(10))
-                .foregroundStyle(Color.rtkMist)
+                .foregroundStyle(Color.rtkSlate)
                 .frame(width: 54, alignment: .leading)
 
             Text(cmd.originalCmd)
@@ -115,6 +120,9 @@ private struct TraceRow: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 5)
         .background(rowBackground)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(cmd.originalCmd)
+        .accessibilityValue("\(Int(cmd.savingsPct))% saved at \(timeString)")
     }
 
     private var savingsColor: Color {
