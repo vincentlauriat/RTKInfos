@@ -1,27 +1,25 @@
 # TODOS
 
-## 🚀 Release v1.1.0 — REPRENDRE ICI
+## ✅ Release v1.1.0 — PUBLIÉE (2026-06-30)
 
-Tout est prêt côté code/git. Version `1.1.0` / build `2`, tag `v1.1.0` poussé,
-clé Sparkle alignée sur MarkdownViewer, docs à jour. Procédure complète dans
-`docs/RELEASE.md`.
+Version `1.1.0` / build `2` livrée. DMG signé/notarisé/staplé, release GitHub
+publiée, appcast servi depuis `main` → l'auto-update Sparkle est actif.
 
-**Fait :**
 - [x] Bump version (project.yml 1.1.0 / 2), build vérifié
 - [x] Clé Sparkle → réutilise celle de MarkdownViewer (`9PD2SB…`, compte Keychain `MarkdownViewer`)
 - [x] Profil notarization → `AppliMacVincentGithub` (apple-id `vincent@lauriat.fr`)
 - [x] Script `build-release.sh` fiabilisé (clean `build/`, bon profil par défaut)
 - [x] Tag `v1.1.0` + docs (CHANGES, README, ARCHITECTURE, RELEASE, index.html)
-
-**Reste à faire (3 commandes, voir docs/RELEASE.md) :**
-- [ ] **1.** Lancer le build signé/notarisé :
-  ```
-  SIGNING_IDENTITY="Developer ID Application: Vincent LAURIAT (KFLACS69T9)" ./scripts/build-release.sh 1.1.0
-  ```
-- [ ] **2.** `gh release create v1.1.0 ./RTKInfos-1.1.0.dmg --title "v1.1.0 — Compression Gauge UX" --notes "…"`
-- [ ] **3.** `git add appcast.xml && git commit -m "release: appcast for v1.1.0" && git push`
+- [x] **Fix régression** : retrait de la section `info:` de `project.yml` qui faisait
+      régénérer `Info.plist` par xcodegen (versions 1.0/1, clés Sparkle perdues). PR #9.
+- [x] Build signé/notarisé → `RTKInfos-1.1.0.dmg` (v1.1.0/2, Sparkle OK, Gatekeeper accepted)
+- [x] Release GitHub : https://github.com/vincentlauriat/RTKInfos/releases/tag/v1.1.0
+- [x] `appcast.xml` mergé sur `main` (PR #9) → feed v1.1.0 servi via raw GitHub
 
 > ⚠️ Les clients v1.0.0 devront télécharger v1.1.0 manuellement une fois (changement de clé Sparkle).
+>
+> 📌 Note machine : `/Applications/RTKInfos.app` est encore en v1.0 — installer le DMG
+> ou attendre que Sparkle propose la mise à jour (téléchargement manuel requis cette fois).
 
 ---
 

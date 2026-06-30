@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- **Release builds shipped as v1.0 without auto-update.** The `info: { path: Info.plist }`
+  section in `project.yml` made xcodegen regenerate `Info.plist` on every `generate`,
+  resetting the version to 1.0/1 and dropping all Sparkle keys (`SUFeedURL`,
+  `SUPublicEDKey`, …). Removed the section; `INFOPLIST_FILE` already wires the
+  hand-maintained plist as a template. (PR #9)
+
 ## v1.1.0 — 2026-06-28
 
 ### Added
