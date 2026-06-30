@@ -26,8 +26,9 @@ targets:
     sources:
       - RTKInfos
       - Sources/RTKCore
-    info:
-      path: Info.plist
+    # NB: pas de section `info:` ici — elle ferait régénérer Info.plist par xcodegen
+    # (versions par défaut 1.0/1, clés Sparkle perdues). On utilise le Info.plist
+    # source maintenu à la main via INFOPLIST_FILE (settings.base).
     dependencies:
       - package: SQLite.swift
         product: SQLite
