@@ -7,8 +7,10 @@
   (panel toggles, trace auto-scroll, panel transition). VoiceOver labels/values
   added to toolbar buttons, the "By Command" rows, the Live Trace rows, and the
   Compression Gauge. Decorative elements (◆ glyph, pulsing dot) are hidden from
-  assistive tech. (Open: AA contrast of `rtkMist` in light mode — pending a
-  design decision.)
+  assistive tech.
+- **AA contrast** — functional text (table headers, TODAY, INPUT/OUTPUT
+  captions, trace timestamps, command count) moved from `rtkMist` to `rtkSlate`
+  (~6.5:1, AA-compliant). `rtkMist` stays for low-signal decorative states.
 
 ### Fixed
 - **Release builds shipped as v1.0 without auto-update.** The `info: { path: Info.plist }`

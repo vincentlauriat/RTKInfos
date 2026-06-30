@@ -44,7 +44,7 @@ struct CommandTraceView: View {
             Spacer()
             Text("\(snapshot.recentCommands.count) cmds")
                 .font(.rtkData(10))
-                .foregroundStyle(Color.rtkMist)
+                .foregroundStyle(Color.rtkSlate)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
@@ -102,7 +102,7 @@ private struct TraceRow: View {
         HStack(spacing: 8) {
             Text(timeString)
                 .font(.rtkData(10))
-                .foregroundStyle(Color.rtkMist)
+                .foregroundStyle(Color.rtkSlate)
                 .frame(width: 54, alignment: .leading)
 
             Text(cmd.originalCmd)

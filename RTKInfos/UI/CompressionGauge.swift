@@ -78,7 +78,7 @@ struct CompressionGauge: View {
             Text(caption)
                 .font(.rtkLabel(9))
                 .tracking(1.2)
-                .foregroundStyle(Color.rtkMist)
+                .foregroundStyle(Color.rtkSlate)
         }
     }
 }

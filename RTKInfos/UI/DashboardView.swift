@@ -171,7 +171,7 @@ struct DashboardView: View {
                         Text("TODAY")
                             .font(.rtkLabel(9))
                             .tracking(1.4)
-                            .foregroundStyle(Color.rtkMist)
+                            .foregroundStyle(Color.rtkSlate)
                         Text("\(rtkFormatTokens(t.savedTokens)) saved  ·  \(t.totalCommands) cmds  ·  \(Int(t.savingsPct))%")
                             .font(.rtkData(11))
                             .foregroundStyle(Color.rtkSlate)
@@ -282,7 +282,7 @@ struct DashboardView: View {
                     }
                     .font(.rtkLabel(10))
                     .tracking(0.4)
-                    .foregroundStyle(Color.rtkMist)
+                    .foregroundStyle(Color.rtkSlate)
                     .padding(.horizontal, 10)
                     .padding(.bottom, 4)
 

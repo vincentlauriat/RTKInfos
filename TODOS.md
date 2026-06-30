@@ -60,7 +60,7 @@ Voir `PLAN.md` pour le design system complet et la justification.
   - [x] `reduceMotion` respecté partout (toggles + transition panneau, auto-scroll trace)
   - [x] VoiceOver : labels/valeurs sur boutons toolbar, lignes By Command, lignes trace, CompressionGauge
   - [x] Éléments décoratifs masqués (`accessibilityHidden`) : glyphe ◆, point pulsant
-  - [ ] **Contraste AA — à valider** : `rtkMist` en light (#9AA3AE ≈ 2.4:1 sur blanc) sous le seuil 4.5:1
-        pour les textes fonctionnels (en-têtes tableau, captions). Choix de design → décision Vincent
-        (assombrir le token light vs. garder l'esthétique neutre actuelle).
+  - [x] **Contraste AA** : textes fonctionnels (en-têtes tableau, TODAY, captions INPUT/OUTPUT,
+        horodatage trace, compteur cmds) passés de `rtkMist` à `rtkSlate` (~6.5:1, conforme AA).
+        `rtkMist` conservé pour les états « low-signal » décoratifs (rtkIntensity, point d'état).
 - [ ] Chart sparkline (optionnel)
