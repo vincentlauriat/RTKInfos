@@ -65,6 +65,9 @@ struct CompressionGauge: View {
                 withAnimation(.easeOut(duration: 0.65).delay(0.12)) { compressed = true }
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Compression")
+        .accessibilityValue("\(rtkFormatTokens(input)) input compressed to \(rtkFormatTokens(output)) output, \(rtkFormatTokens(saved)) tokens killed")
     }
 
     private func endLabel(value: String, caption: String, align: HorizontalAlignment) -> some View {

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+- **Accessibility pass (behavioral).** All animations now honor Reduce Motion
+  (panel toggles, trace auto-scroll, panel transition). VoiceOver labels/values
+  added to toolbar buttons, the "By Command" rows, the Live Trace rows, and the
+  Compression Gauge. Decorative elements (◆ glyph, pulsing dot) are hidden from
+  assistive tech. (Open: AA contrast of `rtkMist` in light mode — pending a
+  design decision.)
+
 ### Fixed
 - **Release builds shipped as v1.0 without auto-update.** The `info: { path: Info.plist }`
   section in `project.yml` made xcodegen regenerate `Info.plist` on every `generate`,

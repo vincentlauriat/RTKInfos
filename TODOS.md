@@ -56,5 +56,11 @@ Voir `PLAN.md` pour le design system complet et la justification.
 ## Phase 4 — Finitions
 - [x] Unifier la langue → **anglais partout** (libellés, dates en_US, bannières)
 - [x] Glyphe ◆ custom (remplace `bolt.fill` jaune) — header + menu bar
-- [ ] Audit accessibilité (focus clavier, reduceMotion ok, contraste AA)
+- [x] Audit accessibilité — comportemental :
+  - [x] `reduceMotion` respecté partout (toggles + transition panneau, auto-scroll trace)
+  - [x] VoiceOver : labels/valeurs sur boutons toolbar, lignes By Command, lignes trace, CompressionGauge
+  - [x] Éléments décoratifs masqués (`accessibilityHidden`) : glyphe ◆, point pulsant
+  - [ ] **Contraste AA — à valider** : `rtkMist` en light (#9AA3AE ≈ 2.4:1 sur blanc) sous le seuil 4.5:1
+        pour les textes fonctionnels (en-têtes tableau, captions). Choix de design → décision Vincent
+        (assombrir le token light vs. garder l'esthétique neutre actuelle).
 - [ ] Chart sparkline (optionnel)

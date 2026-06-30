@@ -19,6 +19,7 @@ struct DashboardView: View {
     @State private var snapshot: StatsSnapshot = .empty
     @State private var showLiveTrace = true
     @State private var showByCommand = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HSplitView {
@@ -46,7 +47,7 @@ struct DashboardView: View {
             if showLiveTrace {
                 CommandTraceView()
                     .frame(minWidth: 280)
-                    .transition(.move(edge: .trailing))
+                    .transition(reduceMotion ? .opacity : .move(edge: .trailing))
             }
         }
         .task {
@@ -64,6 +65,7 @@ struct DashboardView: View {
             Image(systemName: "diamond.fill")
                 .foregroundStyle(Color.rtkEmerald)
                 .font(.system(size: 14))
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 1) {
                 Text("RTK Token Savings")
                     .font(.rtkDisplay(15, weight: .semibold))
@@ -80,26 +82,31 @@ struct DashboardView: View {
             }
             .buttonStyle(.plain)
             .help("Refresh")
+            .accessibilityLabel("Refresh stats")
 
             Divider().frame(height: 14)
 
             Button {
-                withAnimation(.easeInOut(duration: 0.2)) { showByCommand.toggle() }
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) { showByCommand.toggle() }
             } label: {
                 Image(systemName: showByCommand ? "tablecells.fill" : "tablecells")
             }
             .buttonStyle(.plain)
             .opacity(showByCommand ? 1 : 0.4)
             .help(showByCommand ? "Hide By Command" : "Show By Command")
+            .accessibilityLabel("By Command panel")
+            .accessibilityValue(showByCommand ? "shown" : "hidden")
 
             Button {
-                withAnimation(.easeInOut(duration: 0.2)) { showLiveTrace.toggle() }
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) { showLiveTrace.toggle() }
             } label: {
                 Image(systemName: showLiveTrace ? "terminal.fill" : "terminal")
             }
             .buttonStyle(.plain)
             .opacity(showLiveTrace ? 1 : 0.4)
             .help(showLiveTrace ? "Hide Live Trace" : "Show Live Trace")
+            .accessibilityLabel("Live Trace panel")
+            .accessibilityValue(showLiveTrace ? "shown" : "hidden")
 
             Divider().frame(height: 14)
 
@@ -110,6 +117,7 @@ struct DashboardView: View {
             }
             .buttonStyle(.plain)
             .help("Settings")
+            .accessibilityLabel("Settings")
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
@@ -303,6 +311,9 @@ struct DashboardView: View {
                         .padding(.vertical, 5)
                         .padding(.horizontal, 10)
                         .background(idx % 2 == 0 ? Color.primary.opacity(0.02) : Color.clear)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel(cmd.command)
+                        .accessibilityValue("\(cmd.count) runs, \(formatTokens(cmd.totalSaved)) saved, \(Int(cmd.avgPct))% average, impact \(Int(cmd.impactRatio * 100))%")
                     }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 8))

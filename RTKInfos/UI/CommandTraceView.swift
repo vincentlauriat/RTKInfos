@@ -36,6 +36,7 @@ struct CommandTraceView: View {
                 .frame(width: 7, height: 7)
                 .scaleEffect(pulse ? 1.9 : 1)
                 .opacity(pulse ? 1 : 0.85)
+                .accessibilityHidden(true)
             Text("LIVE TRACE")
                 .font(.rtkLabel(11))
                 .tracking(1.5)
@@ -77,8 +78,12 @@ struct CommandTraceView: View {
             }
             .onChange(of: snapshot.recentCommands.count) { _, _ in
                 if let first = snapshot.recentCommands.first {
-                    withAnimation(.easeOut(duration: 0.2)) {
+                    if reduceMotion {
                         proxy.scrollTo(first.timestamp, anchor: .top)
+                    } else {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            proxy.scrollTo(first.timestamp, anchor: .top)
+                        }
                     }
                 }
             }
@@ -115,6 +120,9 @@ private struct TraceRow: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 5)
         .background(rowBackground)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(cmd.originalCmd)
+        .accessibilityValue("\(Int(cmd.savingsPct))% saved at \(timeString)")
     }
 
     private var savingsColor: Color {
