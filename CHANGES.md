@@ -13,6 +13,12 @@
     2-column grid of neutral metric tiles (icon + mono value + label).
   - **By Command** given relief: emerald rank chips for the top 3, the "Saved"
     column in emerald, thicker impact bars, roomier rows.
+- **"Last 7 days" is now a sparkline.** Replaced the full-height bar chart with a
+  compact (64pt) `AreaMark` + `LineMark` sparkline: emerald line with a soft
+  gradient fill, Y-axis auto-scaled to the week's actual min/max (instead of a
+  flat 0–100 domain) so the trend reads clearly, dashed gridlines and per-bar
+  `%` annotations removed, today's `%` shown once next to the section title.
+  Closes the last optional item from the Compression Gauge redesign (`PLAN.md`).
 
 ### Added
 - **Accessibility pass (behavioral).** All animations now honor Reduce Motion

@@ -23,7 +23,7 @@ publiée, appcast servi depuis `main` → l'auto-update Sparkle est actif.
 
 ---
 
-# Refonte UX « Compression Gauge »
+# Refonte UX « Compression Gauge » ✅ TERMINÉE
 
 Voir `PLAN.md` pour le design system complet et la justification.
 
@@ -42,9 +42,10 @@ Voir `PLAN.md` pour le design system complet et la justification.
 - [x] Intégration en tête de `DashboardView` (remplace les 4 KPI cards)
 - [x] Bloc héros « tokens saved » en Display XL Geist
 
-## Phase 2 — Affinage data viz
+## Phase 2 — Affinage data viz ✅
 - [x] `sectionTitle` en Geist label uppercase (cohérence avec COMPRESSION/TOKENS SAVED)
-- [ ] Chart 7 j → sparkline plus discrète (optionnel — le bar chart émeraude marche déjà)
+- [x] Chart 7 j → sparkline discrète (`AreaMark` + `LineMark` émeraude, échelle
+      auto-ajustée à la plage réelle, plus de bar chart ni de grille pointillée)
 
 ## Phase 3 — Sections secondaires ✅
 - [x] `Live Trace` : % en intensité émeraude (plus de rouge)
@@ -63,4 +64,4 @@ Voir `PLAN.md` pour le design system complet et la justification.
   - [x] **Contraste AA** : textes fonctionnels (en-têtes tableau, TODAY, captions INPUT/OUTPUT,
         horodatage trace, compteur cmds) passés de `rtkMist` à `rtkSlate` (~6.5:1, conforme AA).
         `rtkMist` conservé pour les états « low-signal » décoratifs (rtkIntensity, point d'état).
-- [ ] Chart sparkline (optionnel)
+- [x] Chart sparkline

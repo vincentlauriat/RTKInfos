@@ -1,8 +1,8 @@
 # PLAN — Refonte UX « Compression Gauge »
 
 > **Statut : LIVRÉ** (mergé dans `main`, inclus dans la release v1.1.0). Phases 0,
-> 1, 3 terminées ; 2 et 4 quasi complètes. Restant optionnel (suivi dans
-> `TODOS.md`) : audit accessibilité et sparkline.
+> 1, 2, 3, 4 terminées (audit accessibilité + sparkline livrés). Rien de bloquant
+> restant, voir `TODOS.md`.
 
 Direction validée : **Compression Gauge**. L'app cesse d'être un dashboard SwiftUI
 générique pour devenir un *instrument de mesure* : calme, dense, précis, avec un

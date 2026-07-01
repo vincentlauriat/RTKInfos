@@ -189,47 +189,87 @@ struct DashboardView: View {
 
     private var chartSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            sectionTitle("Last 7 days")
+            HStack(alignment: .firstTextBaseline) {
+                sectionTitle("Last 7 days")
+                Spacer()
+                if let last = snapshot.weekStats.last {
+                    Text("\(Int(last.savingsPct))%")
+                        .font(.rtkData(13))
+                        .monospacedDigit()
+                        .foregroundStyle(Color.rtkEmerald)
+                }
+            }
             if snapshot.weekStats.isEmpty {
                 Text("No data")
                     .font(.caption)
                     .foregroundStyle(.tertiary)
-                    .frame(maxWidth: .infinity, minHeight: 120)
+                    .frame(maxWidth: .infinity, minHeight: 64)
             } else {
-                Chart(snapshot.weekStats, id: \.date) { stat in
-                    BarMark(
-                        x: .value("Jour", stat.date, unit: .day),
-                        y: .value("Savings %", stat.savingsPct)
-                    )
-                    .foregroundStyle(barColor(for: stat.savingsPct))
-                    .cornerRadius(4)
-                    PointMark(
-                        x: .value("Jour", stat.date, unit: .day),
-                        y: .value("Savings %", stat.savingsPct)
-                    )
-                    .foregroundStyle(barColor(for: stat.savingsPct))
-                    .annotation(position: .top) {
-                        Text("\(Int(stat.savingsPct))%")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                Chart {
+                    ForEach(snapshot.weekStats, id: \.date) { stat in
+                        AreaMark(
+                            x: .value("Day", stat.date, unit: .day),
+                            y: .value("Savings %", stat.savingsPct)
+                        )
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [Color.rtkEmerald.opacity(0.2), Color.rtkEmerald.opacity(0)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .interpolationMethod(.catmullRom)
+
+                        LineMark(
+                            x: .value("Day", stat.date, unit: .day),
+                            y: .value("Savings %", stat.savingsPct)
+                        )
+                        .foregroundStyle(Color.rtkEmerald)
+                        .lineStyle(StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                        .interpolationMethod(.catmullRom)
+                    }
+                    if let last = snapshot.weekStats.last {
+                        PointMark(
+                            x: .value("Day", last.date, unit: .day),
+                            y: .value("Savings %", last.savingsPct)
+                        )
+                        .foregroundStyle(Color.rtkEmerald)
+                        .symbolSize(36)
                     }
                 }
-                .chartYScale(domain: 0...100)
-                .chartYAxis {
-                    AxisMarks(values: [0, 25, 50, 75, 100]) { value in
-                        AxisValueLabel { Text("\(value.as(Int.self) ?? 0)%").font(.caption2) }
-                        AxisGridLine(stroke: StrokeStyle(dash: [3, 3]))
-                    }
-                }
+                .chartYScale(domain: weekChartDomain)
+                .chartYAxis(.hidden)
                 .chartXAxis {
                     AxisMarks(values: .stride(by: .day)) { _ in
-                        AxisValueLabel(format: .dateTime.weekday(.abbreviated).locale(Locale(identifier: "en_US")))
-                        AxisGridLine()
+                        AxisValueLabel(format: .dateTime.weekday(.narrow).locale(Locale(identifier: "en_US")))
+                            .font(.caption2)
+                            .foregroundStyle(Color.rtkMist)
                     }
                 }
-                .frame(height: 160)
+                .frame(height: 64)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Last 7 days savings trend")
+                .accessibilityValue(weekAccessibilitySummary)
             }
         }
+    }
+
+    /// Padded min/max of the week's savings % so the sparkline shows the
+    /// actual trend instead of flattening near the top of a fixed 0–100 scale.
+    private var weekChartDomain: ClosedRange<Double> {
+        let values = snapshot.weekStats.map(\.savingsPct)
+        let lo = max(0, (values.min() ?? 0) - 5)
+        let hi = min(100, (values.max() ?? 100) + 5)
+        return lo < hi ? lo...hi : 0...100
+    }
+
+    private var weekAccessibilitySummary: String {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "EEE"
+        fmt.locale = Locale(identifier: "en_US")
+        return snapshot.weekStats
+            .map { "\(fmt.string(from: $0.date)) \(Int($0.savingsPct))%" }
+            .joined(separator: ", ")
     }
 
     // MARK: - Global stats
@@ -439,10 +479,6 @@ struct DashboardView: View {
     }
 
     private func colorForPct(_ pct: Double) -> Color {
-        rtkIntensity(pct)
-    }
-
-    private func barColor(for pct: Double) -> Color {
         rtkIntensity(pct)
     }
 
