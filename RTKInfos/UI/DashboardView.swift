@@ -151,14 +151,18 @@ struct DashboardView: View {
                 CompressionGauge(input: g.totalInputTokens, output: g.totalOutputTokens)
 
                 VStack(alignment: .leading, spacing: 3) {
-                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    HStack(alignment: .firstTextBaseline, spacing: 10) {
                         Text(rtkFormatTokens(g.totalSavedTokens))
                             .font(.rtkDisplay(44, weight: .bold))
                             .monospacedDigit()
                             .foregroundStyle(Color.rtkInk)
                         Text("\(Int(g.avgSavingsPct))%")
-                            .font(.rtkData(15))
+                            .font(.rtkDisplay(20, weight: .bold))
+                            .monospacedDigit()
                             .foregroundStyle(Color.rtkEmerald)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(Color.rtkEmerald.opacity(0.12), in: Capsule())
                     }
                     Text("TOKENS SAVED · ALL TIME")
                         .font(.rtkLabel())
@@ -234,30 +238,94 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 10) {
             sectionTitle("All time")
             if let g = snapshot.globalStats {
-                VStack(alignment: .leading, spacing: 6) {
-                    statsRow("Total commands", value: "\(g.totalCommands)")
-                    statsRow("Input tokens",   value: formatTokens(g.totalInputTokens))
-                    statsRow("Output tokens",  value: formatTokens(g.totalOutputTokens))
-                    statsRow("Tokens saved",   value: "\(formatTokens(g.totalSavedTokens)) (\(Int(g.avgSavingsPct))%)")
-                    statsRow("Exec time",      value: "\(formatDuration(g.totalExecTimeMs)) (avg \(g.avgExecTimeMs)ms)")
+                VStack(spacing: 10) {
+                    savedHighlightTile(
+                        saved: g.totalSavedTokens,
+                        pct: g.avgSavingsPct,
+                        input: g.totalInputTokens,
+                        output: g.totalOutputTokens
+                    )
+                    LazyVGrid(
+                        columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
+                        spacing: 10
+                    ) {
+                        statTile(icon: "number", label: "Commands", value: "\(g.totalCommands)")
+                        statTile(icon: "clock", label: "Exec time", value: formatDuration(g.totalExecTimeMs))
+                        statTile(icon: "arrow.down.to.line.compact", label: "Input", value: formatTokens(g.totalInputTokens))
+                        statTile(icon: "arrow.up.right", label: "Output", value: formatTokens(g.totalOutputTokens))
+                    }
                 }
-                .padding(12)
-                .background(Color.primary.opacity(0.03))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
     }
 
-    private func statsRow(_ label: String, value: String) -> some View {
-        HStack {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+    /// The hero of the "All time" block: the saved total, emerald-emphasised,
+    /// echoing the top-left signature so the section no longer reads as filler.
+    private func savedHighlightTile(saved: Int, pct: Double, input: Int, output: Int) -> some View {
+        HStack(alignment: .center, spacing: 14) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("TOKENS SAVED")
+                    .font(.rtkLabel(9)).tracking(1.4)
+                    .foregroundStyle(Color.rtkEmerald)
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(formatTokens(saved))
+                        .font(.rtkDisplay(26, weight: .bold)).monospacedDigit()
+                        .foregroundStyle(Color.rtkInk)
+                    Text("\(Int(pct))%")
+                        .font(.rtkData(13))
+                        .foregroundStyle(Color.rtkEmerald)
+                }
+            }
             Spacer()
-            Text(value)
-                .font(.system(.caption, design: .monospaced))
-                .foregroundStyle(.primary)
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("\(formatTokens(input)) → \(formatTokens(output))")
+                    .font(.rtkData(12))
+                    .foregroundStyle(Color.rtkSlate)
+                Text("INPUT · OUTPUT")
+                    .font(.rtkLabel(8)).tracking(1.2)
+                    .foregroundStyle(Color.rtkMist)
+            }
         }
+        .padding(14)
+        .frame(maxWidth: .infinity)
+        .background(Color.rtkEmerald.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.rtkEmerald.opacity(0.25), lineWidth: 1)
+        )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Tokens saved")
+        .accessibilityValue("\(formatTokens(saved)), \(Int(pct)) percent, from \(formatTokens(input)) input to \(formatTokens(output)) output")
+    }
+
+    /// A neutral metric tile — icon + big mono value + label. No judgement
+    /// colour (mist icon), reserving emerald for the savings story.
+    private func statTile(icon: String, label: String, value: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 13))
+                .foregroundStyle(Color.rtkMist)
+                .frame(width: 18)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(value)
+                    .font(.rtkData(15)).monospacedDigit()
+                    .foregroundStyle(Color.rtkInk)
+                Text(label.uppercased())
+                    .font(.rtkLabel(9)).tracking(1)
+                    .foregroundStyle(Color.rtkSlate)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity)
+        .background(Color.primary.opacity(0.03))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(label)
+        .accessibilityValue(value)
     }
 
     // MARK: - Top commands
@@ -288,19 +356,19 @@ struct DashboardView: View {
 
                     ForEach(Array(snapshot.topCommands.enumerated()), id: \.offset) { idx, cmd in
                         HStack(spacing: 0) {
-                            Text("\(idx + 1)")
+                            rankBadge(idx + 1)
                                 .frame(width: 20, alignment: .leading)
-                                .foregroundStyle(.tertiary)
                             Text(cmd.command)
                                 .lineLimit(1)
                                 .truncationMode(.tail)
+                                .foregroundStyle(Color.rtkInk)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Text("\(cmd.count)")
                                 .frame(width: 42, alignment: .trailing)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.rtkSlate)
                             Text(formatTokens(cmd.totalSaved))
                                 .frame(width: 52, alignment: .trailing)
-                                .foregroundStyle(.primary)
+                                .foregroundStyle(Color.rtkEmerald)
                             Text("\(Int(cmd.avgPct))%")
                                 .frame(width: 40, alignment: .trailing)
                                 .foregroundStyle(colorForPct(cmd.avgPct))
@@ -308,7 +376,7 @@ struct DashboardView: View {
                                 .frame(width: 72, alignment: .trailing)
                         }
                         .font(.rtkData(11))
-                        .padding(.vertical, 5)
+                        .padding(.vertical, 6)
                         .padding(.horizontal, 10)
                         .background(idx % 2 == 0 ? Color.primary.opacity(0.02) : Color.clear)
                         .accessibilityElement(children: .ignore)
@@ -321,6 +389,17 @@ struct DashboardView: View {
         }
     }
 
+    /// Rank chip — the top three get an emerald halo, the rest stay neutral mist.
+    private func rankBadge(_ n: Int) -> some View {
+        Text("\(n)")
+            .font(.rtkData(10))
+            .foregroundStyle(n <= 3 ? Color.rtkEmerald : Color.rtkMist)
+            .frame(width: 17, height: 17)
+            .background(
+                Circle().fill(n <= 3 ? Color.rtkEmerald.opacity(0.14) : Color.primary.opacity(0.04))
+            )
+    }
+
     private func impactBar(_ ratio: Double) -> some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
@@ -330,7 +409,7 @@ struct DashboardView: View {
                     .frame(width: max(3, geo.size.width * ratio))
             }
         }
-        .frame(height: 5)
+        .frame(height: 6)
     }
 
     // MARK: - Helpers

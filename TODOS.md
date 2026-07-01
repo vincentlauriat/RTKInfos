@@ -18,8 +18,8 @@ publiée, appcast servi depuis `main` → l'auto-update Sparkle est actif.
 
 > ⚠️ Les clients v1.0.0 devront télécharger v1.1.0 manuellement une fois (changement de clé Sparkle).
 >
-> 📌 Note machine : `/Applications/RTKInfos.app` est encore en v1.0 — installer le DMG
-> ou attendre que Sparkle propose la mise à jour (téléchargement manuel requis cette fois).
+> 📌 Note machine : `/Applications/RTKInfos.app` mis à jour en **v1.1.0 / build 2** le 2026-06-30
+> (le « 7,9 % faux » venait de la v1.0 périmée, calcul non pondéré ; v1.1.0 affiche le 66,8 % pondéré).
 
 ---
 
