@@ -18,12 +18,12 @@ publiée, appcast servi depuis `main` → l'auto-update Sparkle est actif.
 
 > ⚠️ Les clients v1.0.0 devront télécharger v1.1.0 manuellement une fois (changement de clé Sparkle).
 >
-> 📌 Note machine : `/Applications/RTKInfos.app` est encore en v1.0 — installer le DMG
-> ou attendre que Sparkle propose la mise à jour (téléchargement manuel requis cette fois).
+> 📌 Note machine : `/Applications/RTKInfos.app` mis à jour en **v1.1.0 / build 2** le 2026-06-30
+> (le « 7,9 % faux » venait de la v1.0 périmée, calcul non pondéré ; v1.1.0 affiche le 66,8 % pondéré).
 
 ---
 
-# Refonte UX « Compression Gauge »
+# Refonte UX « Compression Gauge » ✅ TERMINÉE
 
 Voir `PLAN.md` pour le design system complet et la justification.
 
@@ -42,9 +42,10 @@ Voir `PLAN.md` pour le design system complet et la justification.
 - [x] Intégration en tête de `DashboardView` (remplace les 4 KPI cards)
 - [x] Bloc héros « tokens saved » en Display XL Geist
 
-## Phase 2 — Affinage data viz
+## Phase 2 — Affinage data viz ✅
 - [x] `sectionTitle` en Geist label uppercase (cohérence avec COMPRESSION/TOKENS SAVED)
-- [ ] Chart 7 j → sparkline plus discrète (optionnel — le bar chart émeraude marche déjà)
+- [x] Chart 7 j → sparkline discrète (`AreaMark` + `LineMark` émeraude, échelle
+      auto-ajustée à la plage réelle, plus de bar chart ni de grille pointillée)
 
 ## Phase 3 — Sections secondaires ✅
 - [x] `Live Trace` : % en intensité émeraude (plus de rouge)
@@ -63,4 +64,4 @@ Voir `PLAN.md` pour le design system complet et la justification.
   - [x] **Contraste AA** : textes fonctionnels (en-têtes tableau, TODAY, captions INPUT/OUTPUT,
         horodatage trace, compteur cmds) passés de `rtkMist` à `rtkSlate` (~6.5:1, conforme AA).
         `rtkMist` conservé pour les états « low-signal » décoratifs (rtkIntensity, point d'état).
-- [ ] Chart sparkline (optionnel)
+- [x] Chart sparkline

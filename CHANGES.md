@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+### Changed
+- **Dashboard visual pass — "All time" & "By Command" less flat.** Made the lower
+  dashboard as engaging as the hero/chart, keeping the single-emerald design
+  language (no red/orange):
+  - **Hero `%`** promoted from `rtkData(15)` to a bold `rtkDisplay(20)` in an
+    emerald pill — no longer dwarfed by the 44 pt saved total.
+  - **All time** rebuilt from a flat grey text list into tiles: an emerald
+    "Tokens saved" highlight card (big mono value + `%` + input→output) above a
+    2-column grid of neutral metric tiles (icon + mono value + label).
+  - **By Command** given relief: emerald rank chips for the top 3, the "Saved"
+    column in emerald, thicker impact bars, roomier rows.
+- **"Last 7 days" is now a sparkline.** Replaced the full-height bar chart with a
+  compact (64pt) `AreaMark` + `LineMark` sparkline: emerald line with a soft
+  gradient fill, Y-axis auto-scaled to the week's actual min/max (instead of a
+  flat 0–100 domain) so the trend reads clearly, dashed gridlines and per-bar
+  `%` annotations removed, today's `%` shown once next to the section title.
+  Closes the last optional item from the Compression Gauge redesign (`PLAN.md`).
+
 ### Added
 - **Accessibility pass (behavioral).** All animations now honor Reduce Motion
   (panel toggles, trace auto-scroll, panel transition). VoiceOver labels/values
