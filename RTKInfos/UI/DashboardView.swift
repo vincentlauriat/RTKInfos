@@ -1,5 +1,6 @@
 import SwiftUI
 import Charts
+import AppKit
 
 /// The main application window.
 ///
@@ -111,6 +112,15 @@ struct DashboardView: View {
             Divider().frame(height: 14)
 
             Button {
+                revealDatabaseInFinder()
+            } label: {
+                Image(systemName: "folder")
+            }
+            .buttonStyle(.plain)
+            .help("Reveal history.db in Finder")
+            .accessibilityLabel("Reveal database in Finder")
+
+            Button {
                 openSettings()
             } label: {
                 Image(systemName: "gearshape")
@@ -121,6 +131,17 @@ struct DashboardView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 14)
+    }
+
+    /// Opens Finder with rtk's `history.db` selected. Falls back to opening the
+    /// containing directory if the file no longer exists at the resolved path.
+    private func revealDatabaseInFinder() {
+        let url = URL(fileURLWithPath: model.databasePath)
+        if FileManager.default.fileExists(atPath: url.path) {
+            NSWorkspace.shared.activateFileViewerSelecting([url])
+        } else {
+            NSWorkspace.shared.open(url.deletingLastPathComponent())
+        }
     }
 
     // MARK: - Bannières d'état

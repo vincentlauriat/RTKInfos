@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- **"Reveal history.db in Finder" toolbar button.** A new folder icon in the
+  dashboard toolbar (left of Settings) opens Finder with rtk's `history.db`
+  selected — falls back to opening the parent directory if the file has moved.
+  `StatsModel` now exposes its resolved `databasePath` for the UI.
+
 ## 1.1.1 — 2026-07-05
 
 ### Fixed

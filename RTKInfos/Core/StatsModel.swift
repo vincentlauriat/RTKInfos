@@ -20,6 +20,10 @@ final class StatsModel: ObservableObject {
     private var watcher: DBWatcher?
     private var watcherTask: Task<Void, Never>?
 
+    /// The resolved path to rtk's `history.db` this model reads from.
+    /// Exposed so the UI can reveal the file in Finder.
+    var databasePath: String { dbPath }
+
     /// Creates a model configured to read from `dbPath` and poll every `pollingInterval` seconds.
     /// - Parameters:
     ///   - dbPath: Absolute path to rtk's `history.db`.
