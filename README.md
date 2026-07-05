@@ -11,6 +11,7 @@ A native macOS app that visualizes token savings from [rtk](https://github.com/r
 - **7-day chart** — daily savings, color-encoded by intensity (no traffic-light coloring)
 - **By Command** — top commands ranked by tokens saved, with native impact bars
 - **Status alerts** — detects missing rtk install or inactivity > 7 days
+- **Reveal database** — a toolbar button opens Finder with rtk's `history.db` selected
 - **Preferences** — launch at login, polling interval, custom DB path
 - **Auto-update** — Sparkle background updates, prompts before installing
 

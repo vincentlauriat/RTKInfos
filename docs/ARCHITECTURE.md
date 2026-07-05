@@ -158,7 +158,7 @@ Main application window. Receives `StatsModel` via `@Environment`.
 **Layout**: an `HSplitView` — the dashboard on the left, the Live Trace panel on the right (togglable).
 ```
 ┌───────────────────────────────┬───────────────┐
-│ Toolbar (◆ title, toggles)    │ LIVE TRACE    │
+│ Toolbar (◆, toggles, DB, ⚙)   │ LIVE TRACE    │
 ├───────────────────────────────┤  •  cmd  %    │
 │ Status banner (if needed)     │  •  cmd  %    │
 │ COMPRESSION gauge (signature) │  •  cmd  %    │
@@ -169,6 +169,8 @@ Main application window. Receives `StatsModel` via `@Environment`.
 │ BY COMMAND (native bars)      │               │
 └───────────────────────────────┴───────────────┘
 ```
+
+**Toolbar actions**: refresh, toggle the By Command / Live Trace panels, **reveal `history.db` in Finder** (`NSWorkspace.activateFileViewerSelecting`, falling back to the parent directory if the file has moved — path from `StatsModel.databasePath`), and open Settings.
 
 **Conditional rendering**: the data sections are hidden when `isDBMissing` is true — only the status banner is shown.
 
