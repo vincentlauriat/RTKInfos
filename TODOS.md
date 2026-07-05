@@ -1,6 +1,6 @@
 # TODOS
 
-## 🔧 Release v1.1.1 — build local en place (2026-07-05)
+## ✅ Release v1.1.1 — PUBLIÉE (2026-07-05)
 
 Fix d'affichage : les `%` étaient tronqués (`Int(pct)`) au lieu d'être arrondis,
 minorant systématiquement l'économie (35.71 % → « 35 % », 0.66 % → « 0 % »).
@@ -10,7 +10,8 @@ Helper `rtkFormatPct()` ajouté, appliqué à Live Trace + tout le Dashboard.
 - [x] Bump `project.yml` 1.1.1 / build 3
 - [x] `build-release.sh 1.1.1` → DMG notarisé (Accepted) + staplé + Sparkle-signé
 - [x] `/Applications/RTKInfos.app` remplacée par v1.1.1/3 (spctl: Notarized Developer ID)
-- [ ] Release GitHub `v1.1.1` + merge `appcast.xml` sur `main` (à confirmer avec Vincent)
+- [x] Release GitHub `v1.1.1` (DMG, HTTP 200) + `appcast.xml` mergé sur `main` (PR #13)
+- [x] Auto-update Sparkle actif (enclosure appcast = asset release, notarisé/staplé)
 
 ---
 
