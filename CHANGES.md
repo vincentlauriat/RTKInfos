@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.0 — 2026-07-05
 
 ### Added
 - **"Reveal history.db in Finder" toolbar button.** A new folder icon in the
