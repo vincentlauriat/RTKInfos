@@ -1,5 +1,19 @@
 # TODOS
 
+## 🔧 Release v1.1.1 — build local en place (2026-07-05)
+
+Fix d'affichage : les `%` étaient tronqués (`Int(pct)`) au lieu d'être arrondis,
+minorant systématiquement l'économie (35.71 % → « 35 % », 0.66 % → « 0 % »).
+Helper `rtkFormatPct()` ajouté, appliqué à Live Trace + tout le Dashboard.
+
+- [x] Fix `rtkFormatPct()` + routage des 10 labels `%` (commit `840c53f`)
+- [x] Bump `project.yml` 1.1.1 / build 3
+- [x] `build-release.sh 1.1.1` → DMG notarisé (Accepted) + staplé + Sparkle-signé
+- [x] `/Applications/RTKInfos.app` remplacée par v1.1.1/3 (spctl: Notarized Developer ID)
+- [ ] Release GitHub `v1.1.1` + merge `appcast.xml` sur `main` (à confirmer avec Vincent)
+
+---
+
 ## ✅ Release v1.1.0 — PUBLIÉE (2026-06-30)
 
 Version `1.1.0` / build `2` livrée. DMG signé/notarisé/staplé, release GitHub

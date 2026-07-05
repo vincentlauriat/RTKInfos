@@ -156,7 +156,7 @@ struct DashboardView: View {
                             .font(.rtkDisplay(44, weight: .bold))
                             .monospacedDigit()
                             .foregroundStyle(Color.rtkInk)
-                        Text("\(Int(g.avgSavingsPct))%")
+                        Text(rtkFormatPct(g.avgSavingsPct))
                             .font(.rtkDisplay(20, weight: .bold))
                             .monospacedDigit()
                             .foregroundStyle(Color.rtkEmerald)
@@ -176,7 +176,7 @@ struct DashboardView: View {
                             .font(.rtkLabel(9))
                             .tracking(1.4)
                             .foregroundStyle(Color.rtkSlate)
-                        Text("\(rtkFormatTokens(t.savedTokens)) saved  ·  \(t.totalCommands) cmds  ·  \(Int(t.savingsPct))%")
+                        Text("\(rtkFormatTokens(t.savedTokens)) saved  ·  \(t.totalCommands) cmds  ·  \(rtkFormatPct(t.savingsPct))")
                             .font(.rtkData(11))
                             .foregroundStyle(Color.rtkSlate)
                     }
@@ -193,7 +193,7 @@ struct DashboardView: View {
                 sectionTitle("Last 7 days")
                 Spacer()
                 if let last = snapshot.weekStats.last {
-                    Text("\(Int(last.savingsPct))%")
+                    Text(rtkFormatPct(last.savingsPct))
                         .font(.rtkData(13))
                         .monospacedDigit()
                         .foregroundStyle(Color.rtkEmerald)
@@ -268,7 +268,7 @@ struct DashboardView: View {
         fmt.dateFormat = "EEE"
         fmt.locale = Locale(identifier: "en_US")
         return snapshot.weekStats
-            .map { "\(fmt.string(from: $0.date)) \(Int($0.savingsPct))%" }
+            .map { "\(fmt.string(from: $0.date)) \(rtkFormatPct($0.savingsPct))" }
             .joined(separator: ", ")
     }
 
@@ -311,7 +311,7 @@ struct DashboardView: View {
                     Text(formatTokens(saved))
                         .font(.rtkDisplay(26, weight: .bold)).monospacedDigit()
                         .foregroundStyle(Color.rtkInk)
-                    Text("\(Int(pct))%")
+                    Text(rtkFormatPct(pct))
                         .font(.rtkData(13))
                         .foregroundStyle(Color.rtkEmerald)
                 }
@@ -336,7 +336,7 @@ struct DashboardView: View {
         )
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Tokens saved")
-        .accessibilityValue("\(formatTokens(saved)), \(Int(pct)) percent, from \(formatTokens(input)) input to \(formatTokens(output)) output")
+        .accessibilityValue("\(formatTokens(saved)), \(Int(pct.rounded())) percent, from \(formatTokens(input)) input to \(formatTokens(output)) output")
     }
 
     /// A neutral metric tile — icon + big mono value + label. No judgement
@@ -409,7 +409,7 @@ struct DashboardView: View {
                             Text(formatTokens(cmd.totalSaved))
                                 .frame(width: 52, alignment: .trailing)
                                 .foregroundStyle(Color.rtkEmerald)
-                            Text("\(Int(cmd.avgPct))%")
+                            Text(rtkFormatPct(cmd.avgPct))
                                 .frame(width: 40, alignment: .trailing)
                                 .foregroundStyle(colorForPct(cmd.avgPct))
                             impactBar(cmd.impactRatio)
@@ -421,7 +421,7 @@ struct DashboardView: View {
                         .background(idx % 2 == 0 ? Color.primary.opacity(0.02) : Color.clear)
                         .accessibilityElement(children: .ignore)
                         .accessibilityLabel(cmd.command)
-                        .accessibilityValue("\(cmd.count) runs, \(formatTokens(cmd.totalSaved)) saved, \(Int(cmd.avgPct))% average, impact \(Int(cmd.impactRatio * 100))%")
+                        .accessibilityValue("\(cmd.count) runs, \(formatTokens(cmd.totalSaved)) saved, \(rtkFormatPct(cmd.avgPct)) average, impact \(rtkFormatPct(cmd.impactRatio * 100))")
                     }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 8))

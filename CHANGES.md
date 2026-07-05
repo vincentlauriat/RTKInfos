@@ -1,6 +1,16 @@
 # Changelog
 
-## Unreleased
+## 1.1.1 — 2026-07-05
+
+### Fixed
+- **Savings `%` no longer under-reported.** Every percentage in the UI (Live
+  Trace rows, Dashboard hero/today/7-day/All-time/By-Command, and their
+  VoiceOver values) was rendered with `Int(pct)`, which *truncates* — e.g. a
+  real 35.71 % showed as "35%", 98.94 % as "98%", 0.66 % as "0%", systematically
+  minoring the true saving. Added a shared `rtkFormatPct(_:)` helper that rounds
+  to nearest, and routed all `%` labels through it. The underlying values (read
+  straight from rtk's `savings_pct` column) were already correct — only the
+  display rounding was off.
 
 ### Changed
 - **Dashboard visual pass — "All time" & "By Command" less flat.** Made the lower

@@ -89,3 +89,11 @@ func rtkFormatTokens(_ n: Int) -> String {
     if n >= 1_000     { return String(format: "%.1fk", Double(n) / 1_000) }
     return "\(n)"
 }
+
+/// Whole-percent label, e.g. 35.71 → "36%".
+///
+/// Rounds to nearest (`Int(_:)` alone truncates, which systematically
+/// under-reports savings — 35.71 % would show as "35%").
+func rtkFormatPct(_ pct: Double) -> String {
+    "\(Int(pct.rounded()))%"
+}

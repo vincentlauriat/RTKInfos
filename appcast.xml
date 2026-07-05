@@ -6,16 +6,16 @@
     <description>RTKInfos release feed</description>
     <language>en</language>
     <item>
-      <title>v1.1.0</title>
-      <pubDate>Tue, 30 Jun 2026 16:08:28 +0200</pubDate>
-      <sparkle:version>2</sparkle:version>
-      <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+      <title>v1.1.1</title>
+      <pubDate>Sun, 05 Jul 2026 02:13:30 +0200</pubDate>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>1.1.1</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-      <sparkle:releaseNotesLink>https://github.com/vincentlauriat/RTKInfos/releases/tag/v1.1.0</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://github.com/vincentlauriat/RTKInfos/releases/tag/v1.1.1</sparkle:releaseNotesLink>
       <enclosure
-        url="https://github.com/vincentlauriat/RTKInfos/releases/download/v1.1.0/RTKInfos-1.1.0.dmg"
+        url="https://github.com/vincentlauriat/RTKInfos/releases/download/v1.1.1/RTKInfos-1.1.1.dmg"
         type="application/octet-stream"
-        sparkle:edSignature="dc0X+UXQEoAb3H/FBJB4INKNq3r4CpXypfXqrtHyQahlMZlLfIJnCAK8dFMM2DyulSDCHJbPOQlRrH54nuG7Aw==" length="2022538" />
+        sparkle:edSignature="tRo7VNWcFEb6oGB2LFQ5gYLi6+EKTC1jQuCIywF6DssSkqZULOFHsTvSDSeP7APNK806CbD4nDw+4+mobCXUDQ==" length="2060473" />
     </item>
   </channel>
 </rss>

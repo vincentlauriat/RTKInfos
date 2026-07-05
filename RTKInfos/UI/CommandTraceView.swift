@@ -112,7 +112,7 @@ private struct TraceRow: View {
                 .truncationMode(.middle)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text("\(Int(cmd.savingsPct))%")
+            Text(rtkFormatPct(cmd.savingsPct))
                 .font(.rtkData(11))
                 .foregroundStyle(savingsColor)
                 .frame(width: 32, alignment: .trailing)
@@ -122,7 +122,7 @@ private struct TraceRow: View {
         .background(rowBackground)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(cmd.originalCmd)
-        .accessibilityValue("\(Int(cmd.savingsPct))% saved at \(timeString)")
+        .accessibilityValue("\(rtkFormatPct(cmd.savingsPct)) saved at \(timeString)")
     }
 
     private var savingsColor: Color {
