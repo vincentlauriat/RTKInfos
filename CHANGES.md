@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.1 — 2026-07-05
 
 ### Fixed
 - **Savings `%` no longer under-reported.** Every percentage in the UI (Live
