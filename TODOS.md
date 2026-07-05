@@ -1,5 +1,19 @@
 # TODOS
 
+## 🚧 Release v1.2.0 — en cours (2026-07-05)
+
+Feature : bouton « Reveal history.db in Finder » (icône dossier) dans le toolbar
+du Dashboard, à gauche de Settings. `NSWorkspace.activateFileViewerSelecting`,
+repli sur le dossier parent si le fichier a bougé. `StatsModel.databasePath` exposé.
+
+- [x] Implémentation + build Debug vérifié + testé (instance debug)
+- [x] Bump `project.yml` 1.2.0 / build 4
+- [ ] `build-release.sh 1.2.0` → DMG notarisé + staplé + Sparkle-signé
+- [ ] `/Applications/RTKInfos.app` remplacée par v1.2.0/4
+- [ ] Release GitHub `v1.2.0` + `appcast.xml` mergé sur `main`
+
+---
+
 ## ✅ Release v1.1.1 — PUBLIÉE (2026-07-05)
 
 Fix d'affichage : les `%` étaient tronqués (`Int(pct)`) au lieu d'être arrondis,
