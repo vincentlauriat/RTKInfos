@@ -108,45 +108,57 @@
   code{background:#06100c;border:1px solid var(--line);border-radius:6px;padding:2px 7px;font:13px/1.4 var(--font-mono);color:var(--accent)}
 
   @media(max-width:880px){.hero-grid,.why{grid-template-columns:1fr;gap:30px}.why{padding:28px}.g3,.steps{grid-template-columns:1fr}.nav-links a:not(.btn){display:none}}
+
+  .langtog{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex:none}
+  .langtog button{background:transparent;border:0;color:var(--muted);font:600 12.5px/1 var(--font-mono);
+    padding:0 10px;min-height:36px;cursor:pointer}
+  .langtog button+button{border-left:1px solid var(--line)}
+  .langtog button:hover{color:var(--txt)}
+  .langtog button.on{background:var(--accent);color:var(--on-accent)}
 </style>
 </head>
 <body>
-<a class="skip" href="#top">Skip to content</a>
+<a class="skip" href="#top"><span class="en">Skip to content</span><span class="fr">Aller au contenu</span><span class="zh">跳至內容</span></a>
 
 <nav><div class="wrap">
   <a class="brand" href="#top"><span class="logo"><svg width="19" height="19" viewBox="0 0 100 100"><path d="M22 64 L40 46 L54 58 L78 32" stroke="#04130d" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="78" cy="32" r="7" fill="#04130d"/></svg></span>RTKInfos</a>
   <div class="nav-links">
-    <a href="#features">Features</a>
-    <a href="#why">Why</a>
-    <a href="#install">Install</a>
+    <a href="#features"><span class="en">Features</span><span class="fr">Fonctions</span><span class="zh">功能</span></a>
+    <a href="#why"><span class="en">Why</span><span class="fr">Pourquoi</span><span class="zh">為什麼</span></a>
+    <a href="#install"><span class="en">Install</span><span class="fr">Installer</span><span class="zh">安裝</span></a>
     <a href="https://github.com/vincentlauriat/RTKInfos">GitHub</a>
-    <a class="btn btn-primary btn-sm" href="https://github.com/vincentlauriat/RTKInfos/releases/latest">Download</a>
+    <div class="langtog" role="group" aria-label="Language / Langue / 語言">
+    <button type="button" data-lang="en" class="on" onclick="setLang('en')">EN</button>
+    <button type="button" data-lang="fr" onclick="setLang('fr')">FR</button>
+    <button type="button" data-lang="zh" onclick="setLang('zh')">中文</button>
+  </div>
+    <a class="btn btn-primary btn-sm" href="https://github.com/vincentlauriat/RTKInfos/releases/latest"><span class="en">Download</span><span class="fr">Télécharger</span><span class="zh">下載</span></a>
   </div>
 </div></nav>
 
 <header id="top"><div class="wrap">
   <div class="hero-grid">
     <div>
-      <span class="pill">📊 Built for <b>RTK</b> — saves 60–90% of Claude API tokens</span>
-      <h1>Your token savings,<br><span class="grad">live in the menu bar.</span></h1>
-      <p class="sub"><a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a> quietly cuts your Claude API token use by 60–90%. RTKInfos turns that into something you can see — a compression gauge, a 7-day trend and a live command trace, one click from the menu bar.</p>
+      <span class="pill">📊 <span class="en">Built for <b>RTK</b> — saves 60–90% of Claude API tokens</span><span class="fr">Conçu pour <b>RTK</b> — économise 60 à 90 % des tokens de l'API Claude</span><span class="zh">專為 <b>RTK</b> 打造——節省 60–90% 的 Claude API token</span></span>
+      <h1><span class="en">Your token savings,<br><span class="grad">live in the menu bar.</span></span><span class="fr">Vos économies de tokens,<br><span class="grad">en direct dans la barre de menus.</span></span><span class="zh">你的 token 節省量，<br><span class="grad">即時顯示在選單列。</span></span></h1>
+      <p class="sub"><a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a> <span class="en">quietly cuts your Claude API token use by 60–90%. RTKInfos turns that into something you can see — a compression gauge, a 7-day trend and a live command trace, one click from the menu bar.</span><span class="fr">réduit discrètement votre consommation de tokens de l'API Claude de 60 à 90 %. RTKInfos rend cela visible — une jauge de compression, une tendance sur 7 jours et une trace des commandes en direct, à un clic de la barre de menus.</span><span class="zh">默默地把你的 Claude API token 用量降低 60–90%。RTKInfos 把這件事變成看得見的東西——壓縮量表、7 天趨勢與即時指令紀錄，在選單列點一下就到。</span></p>
       <div class="cta">
-        <a class="btn btn-primary" href="https://github.com/vincentlauriat/RTKInfos/releases/latest">⬇︎ Download for macOS</a>
-        <a class="btn btn-ghost" href="https://github.com/vincentlauriat/RTKInfos">View on GitHub</a>
+        <a class="btn btn-primary" href="https://github.com/vincentlauriat/RTKInfos/releases/latest">⬇︎ <span class="en">Download for macOS</span><span class="fr">Télécharger pour macOS</span><span class="zh">下載 macOS 版</span></a>
+        <a class="btn btn-ghost" href="https://github.com/vincentlauriat/RTKInfos"><span class="en">View on GitHub</span><span class="fr">Voir sur GitHub</span><span class="zh">在 GitHub 上檢視</span></a>
       </div>
-      <p class="meta"><b>Free &amp; open-source (MIT)</b> · macOS 14+ · Requires RTK</p>
+      <p class="meta"><span class="en"><b>Free &amp; open-source (MIT)</b> · macOS 14+ · Requires RTK</span><span class="fr"><b>Gratuit et open source (MIT)</b> · macOS 14+ · Nécessite RTK</span><span class="zh"><b>免費開源（MIT）</b> · macOS 14+ · 需要 RTK</span></p>
     </div>
 
     <div class="winwrap">
       <div class="win" role="img" aria-label="RTKInfos dashboard: daily KPIs, a 7-day savings chart and recent commands">
-        <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="name"><b>RTKInfos</b> — Today</span></div>
+        <div class="titlebar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="name"><b>RTKInfos</b> — <span class="en">Today</span><span class="fr">Aujourd'hui</span><span class="zh">今天</span></span></div>
         <div class="dash">
           <div class="kpis">
-            <div class="kpi"><div class="n">1.24M</div><div class="l">Tokens saved</div></div>
-            <div class="kpi"><div class="n">317</div><div class="l">Commands</div></div>
-            <div class="kpi"><div class="n">78%</div><div class="l">Savings rate</div></div>
+            <div class="kpi"><div class="n">1.24M</div><div class="l"><span class="en">Tokens saved</span><span class="fr">Tokens économisés</span><span class="zh">已節省 token</span></div></div>
+            <div class="kpi"><div class="n">317</div><div class="l"><span class="en">Commands</span><span class="fr">Commandes</span><span class="zh">指令數</span></div></div>
+            <div class="kpi"><div class="n">78%</div><div class="l"><span class="en">Savings rate</span><span class="fr">Taux d'économie</span><span class="zh">節省率</span></div></div>
           </div>
-          <div class="chartlabel">Last 7 days · savings %</div>
+          <div class="chartlabel"><span class="en">Last 7 days · savings %</span><span class="fr">7 derniers jours · % d'économie</span><span class="zh">最近 7 天 · 節省百分比</span></div>
           <div class="chart" aria-hidden="true">
             <div class="bar" style="height:62%"><span>71</span></div>
             <div class="bar" style="height:78%"><span>83</span></div>
@@ -169,64 +181,92 @@
 
 <section id="features"><div class="wrap">
   <div class="center">
-    <p class="eyebrow">## features</p>
-    <h2>Everything RTK saves, made visible</h2>
-    <p class="lead">A tiny native menu bar app that reads RTK's local database and turns raw numbers into a glanceable picture of your savings.</p>
+    <p class="eyebrow"><span class="en">## features</span><span class="fr">## fonctions</span><span class="zh">## 功能</span></p>
+    <h2><span class="en">Everything RTK saves, made visible</span><span class="fr">Tout ce que RTK économise, rendu visible</span><span class="zh">把 RTK 省下的一切，變成看得見的</span></h2>
+    <p class="lead"><span class="en">A tiny native menu bar app that reads RTK's local database and turns raw numbers into a glanceable picture of your savings.</span><span class="fr">Une petite app native en barre de menus qui lit la base locale de RTK et transforme les chiffres bruts en une image lisible d'un coup d'œil.</span><span class="zh">一個小巧的原生選單列應用程式，讀取 RTK 的本機資料庫，把原始數字變成一眼就懂的節省全貌。</span></p>
   </div>
   <div class="grid g3">
-    <div class="card"><div class="ico">📡</div><h3>Real-time monitoring</h3><p>Watches RTK's <code class="mono">history.db</code> via FSEvents, with a polling fallback — updates the moment a command runs.</p></div>
-    <div class="card"><div class="ico">📉</div><h3>Compression gauge</h3><p>The signature view: raw input compressed down to output, with the reclaimed tokens highlighted in emerald.</p></div>
-    <div class="card"><div class="ico">📊</div><h3>7-day trend</h3><p>Your daily savings, color-encoded by intensity, so you can spot the pattern at a glance.</p></div>
-    <div class="card"><div class="ico">🧾</div><h3>Live Trace</h3><p>A streaming side panel of your latest commands, newest first, each with its savings.</p></div>
-    <div class="card"><div class="ico">🚨</div><h3>Status alerts</h3><p>Detects a missing RTK install or more than 7 days of inactivity, and tells you.</p></div>
-    <div class="card"><div class="ico">⚙️</div><h3>Preferences</h3><p>Launch at login, configurable polling interval and a custom database path.</p></div>
+    <div class="card"><div class="ico">📡</div><h3><span class="en">Real-time monitoring</span><span class="fr">Surveillance en temps réel</span><span class="zh">即時監控</span></h3><p><span class="en">Watches RTK's <code class="mono">history.db</code> via FSEvents, with a polling fallback — updates the moment a command runs.</span><span class="fr">Surveille le <code class="mono">history.db</code> de RTK via FSEvents, avec repli sur du polling — se met à jour dès qu'une commande tourne.</span><span class="zh">透過 FSEvents 監看 RTK 的 <code class="mono">history.db</code>，並以輪詢作為備援——指令一執行就更新。</span></p></div>
+    <div class="card"><div class="ico">📉</div><h3><span class="en">Compression gauge</span><span class="fr">Jauge de compression</span><span class="zh">壓縮量表</span></h3><p><span class="en">The signature view: raw input compressed down to output, with the reclaimed tokens highlighted in emerald.</span><span class="fr">La vue signature : l'entrée brute compressée vers la sortie, avec les tokens récupérés surlignés en émeraude.</span><span class="zh">招牌視圖：原始輸入壓縮成輸出，並以翡翠綠標出省回來的 token。</span></p></div>
+    <div class="card"><div class="ico">📊</div><h3><span class="en">7-day trend</span><span class="fr">Tendance sur 7 jours</span><span class="zh">7 天趨勢</span></h3><p><span class="en">Your daily savings, color-encoded by intensity, so you can spot the pattern at a glance.</span><span class="fr">Vos économies quotidiennes, encodées en couleur par intensité, pour repérer la tendance d'un coup d'œil.</span><span class="zh">每日節省量以色彩深淺編碼，讓你一眼看出規律。</span></p></div>
+    <div class="card"><div class="ico">🧾</div><h3><span class="en">Live Trace</span><span class="fr">Trace en direct</span><span class="zh">即時紀錄</span></h3><p><span class="en">A streaming side panel of your latest commands, newest first, each with its savings.</span><span class="fr">Un panneau latéral en flux de vos dernières commandes, les plus récentes en premier, chacune avec son économie.</span><span class="zh">側邊即時面板列出你最新的指令，最新的在最上面，每一筆都附上節省量。</span></p></div>
+    <div class="card"><div class="ico">🚨</div><h3><span class="en">Status alerts</span><span class="fr">Alertes d'état</span><span class="zh">狀態警示</span></h3><p><span class="en">Detects a missing RTK install or more than 7 days of inactivity, and tells you.</span><span class="fr">Détecte une installation RTK manquante ou plus de 7 jours d'inactivité, et vous le signale.</span><span class="zh">偵測到 RTK 未安裝或超過 7 天沒有活動時，會通知你。</span></p></div>
+    <div class="card"><div class="ico">⚙️</div><h3><span class="en">Preferences</span><span class="fr">Préférences</span><span class="zh">偏好設定</span></h3><p><span class="en">Launch at login, configurable polling interval and a custom database path.</span><span class="fr">Lancement à l'ouverture de session, intervalle de polling configurable et chemin de base personnalisé.</span><span class="zh">開機時啟動、可設定的輪詢間隔，以及自訂資料庫路徑。</span></p></div>
   </div>
 </div></section>
 
 <section id="why"><div class="wrap">
   <div class="why">
     <div>
-      <p class="eyebrow">// why it exists</p>
-      <h2 style="text-align:left">Numbers you'd otherwise never see</h2>
-      <p class="lead">RTK does its work silently in the background. RTKInfos sits read-only on top of its database — a single <code class="mono">@Observable</code> source of truth driving a native SwiftUI dashboard — so the savings RTK earns you become tangible, day after day.</p>
+      <p class="eyebrow"><span class="en">// why it exists</span><span class="fr">// pourquoi elle existe</span><span class="zh">// 為什麼有這個工具</span></p>
+      <h2 style="text-align:left"><span class="en">Numbers you'd otherwise never see</span><span class="fr">Des chiffres que vous ne verriez jamais autrement</span><span class="zh">你原本永遠看不到的數字</span></h2>
+      <p class="lead"><span class="en">RTK does its work silently in the background. RTKInfos sits read-only on top of its database — a single <code class="mono">@Observable</code> source of truth driving a native SwiftUI dashboard — so the savings RTK earns you become tangible, day after day.</span><span class="fr">RTK fait son travail silencieusement en arrière-plan. RTKInfos se pose en lecture seule au-dessus de sa base — une unique source de vérité <code class="mono">@Observable</code> qui alimente un tableau de bord SwiftUI natif — pour rendre tangibles, jour après jour, les économies que RTK vous fait gagner.</span><span class="zh">RTK 在背景默默運作。RTKInfos 以唯讀方式架在它的資料庫之上——單一的 <code class="mono">@Observable</code> 真實來源驅動原生 SwiftUI 儀表板——讓 RTK 為你省下的量，一天一天變得具體可見。</span></p>
     </div>
     <div class="stats">
-      <div class="stat"><div class="k">60–90%</div><div class="v">Tokens RTK saves</div></div>
-      <div class="stat"><div class="k">Read-only</div><div class="v">Never writes to RTK's DB</div></div>
-      <div class="stat"><div class="k">FSEvents</div><div class="v">Live, event-driven updates</div></div>
-      <div class="stat"><div class="k">Native</div><div class="v">SwiftUI menu bar app</div></div>
+      <div class="stat"><div class="k">60–90%</div><div class="v"><span class="en">Tokens RTK saves</span><span class="fr">Tokens économisés par RTK</span><span class="zh">RTK 節省的 token</span></div></div>
+      <div class="stat"><div class="k"><span class="en">Read-only</span><span class="fr">Lecture seule</span><span class="zh">唯讀</span></div><div class="v"><span class="en">Never writes to RTK's DB</span><span class="fr">N'écrit jamais dans la base de RTK</span><span class="zh">永不寫入 RTK 的資料庫</span></div></div>
+      <div class="stat"><div class="k">FSEvents</div><div class="v"><span class="en">Live, event-driven updates</span><span class="fr">Mises à jour en direct, pilotées par événements</span><span class="zh">事件驅動的即時更新</span></div></div>
+      <div class="stat"><div class="k"><span class="en">Native</span><span class="fr">Natif</span><span class="zh">原生</span></div><div class="v"><span class="en">SwiftUI menu bar app</span><span class="fr">App SwiftUI en barre de menus</span><span class="zh">SwiftUI 選單列應用程式</span></div></div>
     </div>
   </div>
 </div></section>
 
 <section id="install"><div class="wrap">
   <div class="center">
-    <p class="eyebrow">get started</p>
-    <h2>Up and running in a minute</h2>
-    <p class="lead">RTKInfos reads the database that <a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a> already keeps — so once RTK is set up, there's nothing else to configure.</p>
+    <p class="eyebrow"><span class="en">get started</span><span class="fr">démarrer</span><span class="zh">開始使用</span></p>
+    <h2><span class="en">Up and running in a minute</span><span class="fr">Opérationnel en une minute</span><span class="zh">一分鐘內開始使用</span></h2>
+    <p class="lead">RTKInfos reads the database that <a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a> <span class="en">already keeps — so once RTK is set up, there's nothing else to configure.</span><span class="fr">tient déjà — une fois RTK configuré, il n'y a rien d'autre à régler.</span><span class="zh">本來就在維護的資料庫——只要 RTK 設定好了，就沒有別的要設定。</span></p>
   </div>
   <div class="steps">
-    <div class="step"><h3>Have RTK installed</h3><p>RTKInfos visualizes <a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a>'s data, so install and configure it first.</p></div>
-    <div class="step"><h3>Download &amp; install</h3><p>Grab the latest <code>.dmg</code> and drag <code>RTKInfos.app</code> into <code>/Applications</code>.</p></div>
-    <div class="step"><h3>Launch</h3><p>Open it — the icon lands in your menu bar. Enable <em>Launch at Login</em> from Preferences.</p></div>
+    <div class="step"><h3><span class="en">Have RTK installed</span><span class="fr">Avoir RTK installé</span><span class="zh">先安裝 RTK</span></h3><p>RTKInfos visualizes <a href="https://github.com/rtk-ai/rtk" style="color:var(--accent)">RTK</a><span class="en">'s data, so install and configure it first.</span><span class="fr"> : installez-le et configurez-le d'abord.</span><span class="zh"> 的資料，請先安裝並設定它。</span></p></div>
+    <div class="step"><h3><span class="en">Download &amp; install</span><span class="fr">Télécharger et installer</span><span class="zh">下載並安裝</span></h3><p><span class="en">Grab the latest <code>.dmg</code> and drag <code>RTKInfos.app</code> into <code>/Applications</code>.</span><span class="fr">Récupérez le dernier <code>.dmg</code> et glissez <code>RTKInfos.app</code> dans <code>/Applications</code>.</span><span class="zh">取得最新的 <code>.dmg</code>，把 <code>RTKInfos.app</code> 拖入 <code>/Applications</code>。</span></p></div>
+    <div class="step"><h3><span class="en">Launch</span><span class="fr">Lancer</span><span class="zh">啟動</span></h3><p><span class="en">Open it — the icon lands in your menu bar. Enable <em>Launch at Login</em> from Preferences.</span><span class="fr">Ouvrez-la — l'icône apparaît dans la barre de menus. Activez <em>Lancement à l'ouverture de session</em> dans les Préférences.</span><span class="zh">開啟它——圖示會出現在選單列。可在偏好設定中啟用<em>開機時啟動</em>。</span></p></div>
   </div>
 </div></section>
 
 <section class="final"><div class="wrap">
-  <p class="eyebrow">ready?</p>
-  <h2>See what RTK is saving you</h2>
-  <p class="lead" style="margin:0 auto 6px">Free, open-source and native. macOS 14 Sonoma or later.</p>
+  <p class="eyebrow"><span class="en">ready?</span><span class="fr">prêt ?</span><span class="zh">準備好了嗎？</span></p>
+  <h2><span class="en">See what RTK is saving you</span><span class="fr">Voyez ce que RTK vous fait économiser</span><span class="zh">看看 RTK 為你省下多少</span></h2>
+  <p class="lead" style="margin:0 auto 6px"><span class="en">Free, open-source and native. macOS 14 Sonoma or later.</span><span class="fr">Gratuite, open source et native. macOS 14 Sonoma ou ultérieur.</span><span class="zh">免費、開源、原生。macOS 14 Sonoma 或以上版本。</span></p>
   <div class="cta">
-    <a class="btn btn-primary" href="https://github.com/vincentlauriat/RTKInfos/releases/latest">⬇︎ Download for macOS</a>
-    <a class="btn btn-ghost" href="https://github.com/vincentlauriat/RTKInfos#readme">Read the docs</a>
+    <a class="btn btn-primary" href="https://github.com/vincentlauriat/RTKInfos/releases/latest">⬇︎ <span class="en">Download for macOS</span><span class="fr">Télécharger pour macOS</span><span class="zh">下載 macOS 版</span></a>
+    <a class="btn btn-ghost" href="https://github.com/vincentlauriat/RTKInfos#readme"><span class="en">Read the docs</span><span class="fr">Lire la doc</span><span class="zh">閱讀說明文件</span></a>
   </div>
 </div></section>
 
 <footer><div class="wrap">
-  RTKInfos · MIT License · © 2026 Vincent Lauriat ·
+  RTKInfos · <span class="en">MIT License</span><span class="fr">Licence MIT</span><span class="zh">MIT 授權</span> · © 2026 Vincent Lauriat ·
   <a href="https://github.com/vincentlauriat/RTKInfos">github.com/vincentlauriat/RTKInfos</a>
   · <a href="https://lauriat.fr/outils/rtkinfos/">lauriat.fr</a>
 </div></footer>
 
+<script>
+  /* zh-Hant et non zh : sur un système configuré en chinois simplifié, un
+     simple `zh` laisse le navigateur choisir une fonte Han simplifiée, qui
+     rend certains caractères traditionnels dans la mauvaise forme. */
+  var LANG_TAG={en:'en',fr:'fr',zh:'zh-Hant'};
+  function setLang(l){
+    if(!LANG_TAG[l]) l='en';
+    document.body.classList.remove('lang-en','lang-fr','lang-zh');
+    document.body.classList.add('lang-'+l);
+    document.documentElement.lang=LANG_TAG[l];
+    /* On boucle sur les boutons au lieu de les nommer un par un : ajouter une
+       4e langue ne demandera alors aucune retouche de ce script. */
+    document.querySelectorAll('.langtog button').forEach(function(b){
+      var on=b.dataset.lang===l;
+      b.classList.toggle('on',on);
+      b.setAttribute('aria-pressed',on?'true':'false');
+    });
+    try{localStorage.setItem('vl-lang',l)}catch(e){}
+  }
+  (function(){
+    var saved;try{saved=localStorage.getItem('vl-lang')}catch(e){}
+    var n=(navigator.language||'en').slice(0,2).toLowerCase();
+    /* Le traditionnel est servi a tout visiteur sinophone, y compris zh-CN :
+       c'est la seule variante chinoise disponible, et la renvoyer vaut mieux
+       que de rabattre ce visiteur sur l'anglais. */
+    setLang(saved||(n==='zh'?'zh':(n==='fr'?'fr':'en')));
+  })();
+</script>
 </body>
 </html>
